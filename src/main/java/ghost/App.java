@@ -17,8 +17,8 @@ public class App extends PApplet {
     public MapCell[][] mapCells;
     public List<Ghost> ghosts;
     public List<Fruit> fruits;
+    private final JSONObject config;
     public Waka player;
-    JSONObject config;
     // 0: initialize map, 1: update fruits & player & ghost, 2: update player & ghost
     private int state;
 
@@ -145,6 +145,12 @@ public class App extends PApplet {
             System.out.println("Error in map: no ghost");
             System.exit(0);
         }
+        int speed = ((Long) this.config.get("speed")).intValue();
+        if (speed > 2 || speed < 0) {
+            System.out.println("Error in config: speed");
+            System.exit(0);
+        }
+        player.setSpeed(speed);
         this.mapCells = mapList;
         this.player = player;
         this.ghosts = ghostList;
@@ -162,15 +168,25 @@ public class App extends PApplet {
     }
 
     public void draw() {
-        background(0, 0, 0);
-        if (this.state == 0) {
-            this.initMap();
-        } else if (this.state == 1) {
-            this.updateFruits();
+        // player changes state every 8 frame
+        if (frameCount%8 == 0) {
+            player.closeEye();
+        }
+        switch (this.state) {
+            case 0:
+                this.initMap();
+                break;
+            case 1:
+                this.updateFruits();
+                break;
+            case 2:
+                this.updatePlayers();
+                break;
         }
     }
 
     public void initMap() {
+        background(0, 0, 0);
         for (MapCell[] line : this.mapCells) {
             for (MapCell cell : line) {
                 cell.draw(this);
@@ -182,6 +198,8 @@ public class App extends PApplet {
         }
         //Same for player
         this.player.draw(this);
+        //Only update player and ghost afterwards
+        this.state = 2;
     }
 
     public void updateFruits() {
@@ -192,6 +210,17 @@ public class App extends PApplet {
             g.draw(this);
         }
         this.player.draw(this);
+    }
+
+    public void updatePlayers() {
+        for (Ghost ghost : this.ghosts) {
+            ghost.draw(this);
+        }
+        this.player.draw(this);
+    }
+
+    public void keyPressed() {
+        player.turn(keyCode);
     }
 
     public static void main(String[] args) {

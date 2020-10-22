@@ -4,15 +4,11 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Fruit extends MapCell {
-    boolean isEaten;
-    PImage fruitImage;
-    int x;
-    int y;
+    private boolean isEaten;
 
     Fruit(PImage image, int character, int x, int y) {
         super(image, character, x, y);
         this.isEaten = false;
-        this.fruitImage = image;
     }
 
     @Override
@@ -20,7 +16,7 @@ public class Fruit extends MapCell {
         if (this.isEaten) {
             return;
         }
-        app.image(this.fruitImage, this.x, this.y);
+        super.draw(app);
     }
 
     @Override

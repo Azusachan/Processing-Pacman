@@ -4,9 +4,9 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Ghost extends MapCell{
-    int x;
-    int y;
-    PImage ghostImage;
+    private int x;
+    private int y;
+    private final PImage ghostImage;
     Ghost(PImage image, int character, int x, int y) {
         super(image, character, x, y);
         this.ghostImage = image;
