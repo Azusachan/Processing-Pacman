@@ -16,6 +16,14 @@ public class MapCell {
         this.y = y * 16;
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
     public boolean canPassThrough() {
         return this.cellImage == null;
     }

@@ -21,6 +21,6 @@ public class Ghost extends MapCell{
 
     @Override
     public void draw(PApplet app) {
-        app.image(this.ghostImage, this.x, this.y - 6);
+        app.image(this.ghostImage, this.x - 6, this.y - 6);
     }
 }

@@ -172,6 +172,7 @@ public class App extends PApplet {
         if (frameCount%8 == 0) {
             player.closeEye();
         }
+        player.tick();
         switch (this.state) {
             case 0:
                 this.initMap();
@@ -212,9 +213,29 @@ public class App extends PApplet {
         this.player.draw(this);
     }
 
+    public List<MapCell> findNearbyCells(int x, int y) {
+        List<MapCell> result = new ArrayList<>();
+        for (MapCell[] cellList: this.mapCells) {
+            for (MapCell cell: cellList) {
+                // find 3x3 squares nearby
+                if (Math.abs(cell.getX() - (x + 8)) <= 24 && Math.abs(cell.getY() - (y + 8)) <= 24) {
+                    result.add(cell);
+                }
+            }
+        }
+        return result;
+    }
+
     public void updatePlayers() {
         for (Ghost ghost : this.ghosts) {
             ghost.draw(this);
+        }
+        // refresh the cells nearby for player
+        this.fill(0);
+        this.rect(player.getX() - 5, player.getY() - 6, 25, 27);
+        List<MapCell> nearby = this.findNearbyCells(player.getX(), player.getY());
+        for (MapCell cell: nearby) {
+            cell.draw(this);
         }
         this.player.draw(this);
     }

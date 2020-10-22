@@ -3,6 +3,9 @@ package ghost;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Waka extends MapCell {
     private int x;
     private int y;
@@ -38,7 +41,36 @@ public class Waka extends MapCell {
 
     @Override
     public void draw(PApplet app) {
-        app.image(this.left, this.x, this.y - 5);
+        if (this.closeEye) {
+            app.image(this.closed, this.x - 4, this.y - 5);
+        } else {
+            switch (this.currentDirection) {
+                case 38:
+                    app.image(this.up, this.x - 5, this.y - 4);
+                    break;
+                case 40:
+                    app.image(this.down, this.x - 5, this.y - 4);
+                    break;
+                case 37:
+                    app.image(this.left, this.x - 4, this.y - 5);
+                    break;
+                case 39:
+                    app.image(this.right, this.x - 4, this.y - 5);
+                    break;
+                default:
+                    app.image(this.right, this.x - 4, this.y - 5);
+            }
+        }
+    }
+
+    @Override
+    public int getX() {
+        return this.x;
+    }
+
+    @Override
+    public int getY() {
+        return this.y;
     }
 
     public void closeEye() {
