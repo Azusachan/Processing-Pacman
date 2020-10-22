@@ -31,4 +31,6 @@ public class Waka extends MapCell {
     public void draw(PApplet app) {
         app.image(this.left, this.x, this.y - 5);
     }
+
+
 }
