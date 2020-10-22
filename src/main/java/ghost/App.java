@@ -172,7 +172,6 @@ public class App extends PApplet {
         if (frameCount%8 == 0) {
             player.closeEye();
         }
-        player.tick();
         switch (this.state) {
             case 0:
                 this.initMap();
@@ -193,13 +192,8 @@ public class App extends PApplet {
                 cell.draw(this);
             }
         }
-        //Make sure Ghosts are above Fruits
-        for (Ghost ghost : this.ghosts) {
-            ghost.draw(this);
-        }
-        //Same for player
-        this.player.draw(this);
-        //Only update player and ghost afterwards
+        //Make sure Ghosts and Players are above Fruits
+        this.updatePlayers();
         this.state = 2;
     }
 
@@ -207,10 +201,7 @@ public class App extends PApplet {
         for (Fruit f : this.fruits) {
             f.draw(this);
         }
-        for (Ghost g : this.ghosts) {
-            g.draw(this);
-        }
-        this.player.draw(this);
+        this.updatePlayers();
     }
 
     public List<MapCell> findNearbyCells(int x, int y) {
@@ -237,6 +228,7 @@ public class App extends PApplet {
         for (MapCell cell: nearby) {
             cell.draw(this);
         }
+        player.tick(nearby);
         this.player.draw(this);
     }
 

@@ -29,6 +29,7 @@ public class Waka extends MapCell {
         this.down = images[3];
         this.closed = images[4];
         this.closeEye = false;
+        this.currentDirection = 0;
     }
 
     public void setSpeed(int speed) {
@@ -53,9 +54,6 @@ public class Waka extends MapCell {
                     break;
                 case 37:
                     app.image(this.left, this.x - 4, this.y - 5);
-                    break;
-                case 39:
-                    app.image(this.right, this.x - 4, this.y - 5);
                     break;
                 default:
                     app.image(this.right, this.x - 4, this.y - 5);
@@ -87,7 +85,9 @@ public class Waka extends MapCell {
     }
 
     //handles movement
-    public void tick() {
+    public void tick(List<MapCell> nearbyCells) {
+        //todo: stop when move into cell, turn when appropriate
+
         switch (this.currentDirection) {
             case 38:
                 this.y -= this.speed;
