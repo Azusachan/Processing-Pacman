@@ -225,7 +225,7 @@ public class App extends PApplet {
         }
         // refresh the cells nearby for player
         this.fill(0);
-        this.rect(player.getX() - 5, player.getY() - 6, 25, 27);
+        this.rect(player.getX() - 5, player.getY() - 6, 27, 27);
         List<MapCell> nearby = this.findNearbyCells(player.getX(), player.getY());
         for (MapCell cell: nearby) {
             cell.draw(this);
