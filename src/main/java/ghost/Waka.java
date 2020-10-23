@@ -30,6 +30,7 @@ public class Waka extends MapCell {
         this.closed = images[4];
         this.closeEye = false;
         this.currentDirection = 0;
+        this.nextDirection = 0;
     }
 
     public void setSpeed(int speed) {
@@ -82,25 +83,94 @@ public class Waka extends MapCell {
         } else {
             this.nextDirection = keyCode;
         }
+        // turn when 180 degree
+        if (Math.abs(this.nextDirection - this.currentDirection) == 2) {
+            this.currentDirection = this.nextDirection;
+            this.nextDirection = 0;
+        }
     }
 
     //handles movement
-    public void tick(List<MapCell> nearbyCells) {
-        //todo: stop when move into cell, turn when appropriate
-
-        switch (this.currentDirection) {
-            case 38:
-                this.y -= this.speed;
-                break;
-            case 40:
-                this.y += this.speed;
-                break;
-            case 37:
-                this.x -= this.speed;
-                break;
-            case 39:
-                this.x += this.speed;
-                break;
+    public boolean tick(List<MapCell> nearbyCells) {
+        //todo: bugfix: wall not working
+        // turn when appropriate
+        if (this.nextDirection != 0) {
+            boolean turnable = true;
+            List<MapCell> nextWalkInto = this.cellWalkInto(nearbyCells, this.nextDirection);
+            for (MapCell nextCell : nextWalkInto) {
+                if (!nextCell.canPassThrough()) {
+                    turnable = false;
+                }
+            }
+            if (turnable) {
+                this.currentDirection = this.nextDirection;
+                this.nextDirection = 0;
+            }
         }
+        //eat fruit
+        boolean eat = false;
+        for (MapCell cell : nearbyCells) {
+            if (this.getX() == cell.getX() && this.getY() == cell.getY()) {
+                if (cell.getType() == 7 ) { //fruit
+                    Fruit fruit = (Fruit) cell;
+                    fruit.eaten();
+                    eat = true;
+                }
+            }
+        }
+        // stop when move into wall
+        boolean movable = true;
+        List<MapCell> walkInto = this.cellWalkInto(nearbyCells, this.currentDirection);
+        for (MapCell cell : walkInto) {
+            if (!cell.canPassThrough()) {
+                movable = false;
+            }
+        }
+        if (movable) {
+            switch (this.currentDirection) {
+                case 38:
+                    this.y -= this.speed;
+                    break;
+                case 40:
+                    this.y += this.speed;
+                    break;
+                case 37:
+                    this.x -= this.speed;
+                    break;
+                case 39:
+                    this.x += this.speed;
+                    break;
+            }
+        }
+        return eat;
+    }
+
+    public List<MapCell> cellWalkInto(List<MapCell> nearbyCells, int direction) {
+        List<MapCell> result = new ArrayList<>();
+        for (MapCell cell : nearbyCells) {
+            switch (direction) {
+                case 38:
+                    if (this.x == cell.getX() && this.y - 16 == cell.getY()) {
+                        result.add(cell);
+                    }
+                    break;
+                case 40:
+                    if (this.x == cell.getX() && this.y + 16 == cell.getY()) {
+                        result.add(cell);
+                    }
+                    break;
+                case 37:
+                    if (this.x - 16 == cell.getX() && this.y == cell.getY()) {
+                        result.add(cell);
+                    }
+                    break;
+                case 39:
+                    if (this.x + 16 == cell.getX() && this.y == cell.getY()) {
+                        result.add(cell);
+                    }
+                    break;
+            }
+        }
+        return result;
     }
 }

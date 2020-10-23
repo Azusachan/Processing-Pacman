@@ -17,17 +17,20 @@ public class MapCell {
     }
 
     public int getX() {
-        return x;
+        return this.x;
     }
 
     public int getY() {
-        return y;
+        return this.y;
     }
 
     public boolean canPassThrough() {
         return this.cellImage == null;
     }
 
+    public int getType() {
+        return this.type;
+    }
     public void draw(PApplet app) {
         if (this.cellImage == null) {
             return;

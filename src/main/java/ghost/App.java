@@ -199,6 +199,8 @@ public class App extends PApplet {
 
     public void updateFruits() {
         for (Fruit f : this.fruits) {
+            this.fill(0);
+            this.rect(f.getX(), f.getY(), 16, 16);
             f.draw(this);
         }
         this.updatePlayers();
@@ -228,8 +230,11 @@ public class App extends PApplet {
         for (MapCell cell: nearby) {
             cell.draw(this);
         }
-        player.tick(nearby);
+        boolean eat = player.tick(nearby);
         this.player.draw(this);
+        if (eat) {
+            this.state = 1;
+        }
     }
 
     public void keyPressed() {
