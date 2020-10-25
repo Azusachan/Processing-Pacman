@@ -94,17 +94,19 @@ public class Waka extends MovableCell {
     @Override
     public boolean tick(List<MapCell> nearbyCells) {
         //eat fruit
-        boolean eat = false;
+        boolean edible = false;
         for (MapCell cell : nearbyCells) {
             if (this.getX() == cell.getX() && this.getY() == cell.getY()) {
-                if (cell.getType() == 7 ) { //fruit
+                if (cell.getType() == 7) { //fruit
                     Fruit fruit = (Fruit) cell;
-                    fruit.eaten();
-                    eat = true;
+                    if (!fruit.isEaten()) {
+                        fruit.eaten();
+                        edible = true;
+                    }
                 }
             }
         }
         super.tick(nearbyCells);
-        return eat;
+        return edible;
     }
 }

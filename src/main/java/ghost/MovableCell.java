@@ -112,6 +112,6 @@ public class MovableCell extends MapCell{
                     break;
             }
         }
-        return false;
+        return movable;
     }
 }

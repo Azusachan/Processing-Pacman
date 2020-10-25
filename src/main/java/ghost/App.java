@@ -14,6 +14,20 @@ public class App extends PApplet {
 
     public static final int WIDTH = 448;
     public static final int HEIGHT = 576;
+    private static final String EMPTY = "0";
+    private static final String HORIZONTAL = "1";
+    private static final String VERTICAL = "2";
+    private static final String UP_LEFT = "3";
+    private static final String UP_RIGHT = "4";
+    private static final String DOWN_LEFT = "5";
+    private static final String DOWN_RIGHT = "6";
+    private static final String FRUIT = "7";
+    private static final String WAKA = "p";
+    private static final String GHOST = "g";
+    private static final int INITIALIZE = 0;
+    private static final int UPDATE_PLAYER = 1;
+    private static final int UPDATE_FRUITS = 2;
+
     public MapCell[][] mapCells;
     public List<Ghost> ghosts;
     public List<Fruit> fruits;
@@ -87,6 +101,11 @@ public class App extends PApplet {
             System.out.println("Error in map: size");
             System.exit(0);
         }
+        int speed = ((Long) this.config.get("speed")).intValue();
+        if (speed > 2 || speed < 0) {
+            System.out.println("Error in config: speed");
+            System.exit(0);
+        }
         MapCell[][] mapList = new MapCell[36][28];
         List<Ghost> ghostList = new ArrayList<>();
         List<Fruit> fruitList = new ArrayList<>();
@@ -96,38 +115,40 @@ public class App extends PApplet {
             for (int col = 0; col < line.length(); col++) {
                 String variable = String.valueOf(line.charAt(col));
                 switch (variable) {
-                    case "0":
+                    case EMPTY:
                         mapList[row][col] = new MapCell(null, 0, col, row);
                         break;
-                    case "1":
+                    case HORIZONTAL:
                         mapList[row][col] = new MapCell(horizontal, 1, col, row);
                         break;
-                    case "2":
+                    case VERTICAL:
                         mapList[row][col] = new MapCell(vertical, 2, col, row);
                         break;
-                    case "3":
+                    case UP_LEFT:
                         mapList[row][col] = new MapCell(upLeft, 3, col, row);
                         break;
-                    case "4":
+                    case UP_RIGHT:
                         mapList[row][col] = new MapCell(upRight, 4, col, row);
                         break;
-                    case "5":
+                    case DOWN_LEFT:
                         mapList[row][col] = new MapCell(downLeft, 5, col, row);
                         break;
-                    case "6":
+                    case DOWN_RIGHT:
                         mapList[row][col] = new MapCell(downRight, 6, col, row);
                         break;
-                    case "7":
+                    case FRUIT:
                         Fruit newFruit = new Fruit(fruit, 7, col, row);
                         fruitList.add(newFruit);
                         mapList[row][col] = newFruit;
                         break;
-                    case "p":
+                    case WAKA:
                         player = new Waka(playerImages, 8, col, row);
+                        player.setSpeed(speed);
                         mapList[row][col] = player;
                         break;
-                    case "g":
+                    case GHOST:
                         Ghost newGhost = new Ghost(ghost, 9, col, row);
+                        newGhost.setSpeed(speed);
                         ghostList.add(newGhost);
                         mapList[row][col] = newGhost;
                         break;
@@ -143,11 +164,6 @@ public class App extends PApplet {
         }
         if (ghostList.isEmpty()) {
             System.out.println("Error in map: no ghost");
-            System.exit(0);
-        }
-        int speed = ((Long) this.config.get("speed")).intValue();
-        if (speed > 2 || speed < 0) {
-            System.out.println("Error in config: speed");
             System.exit(0);
         }
         player.setSpeed(speed);
@@ -175,14 +191,14 @@ public class App extends PApplet {
             player.closeEye();
         }
         switch (this.state) {
-            case 0:
+            case INITIALIZE:
                 this.initMap();
                 break;
-            case 1:
-                this.updateFruits();
-                break;
-            case 2:
+            case UPDATE_PLAYER:
                 this.updatePlayers();
+                break;
+            case UPDATE_FRUITS:
+                this.updateFruits();
                 break;
         }
     }
@@ -196,7 +212,7 @@ public class App extends PApplet {
         }
         //Make sure Ghosts and Players are above Fruits
         this.updatePlayers();
-        this.state = 2;
+        this.state = 1;
     }
 
     public void updateFruits() {
@@ -205,7 +221,26 @@ public class App extends PApplet {
             this.rect(f.getX(), f.getY(), 16, 16);
             f.draw(this);
         }
+        this.state = 1;
         this.updatePlayers();
+    }
+
+    public void updatePlayers() {
+        for (Ghost ghost : this.ghosts) {
+            ghost.draw(this);
+        }
+        // refresh the cells nearby for player
+        this.fill(0);
+        this.rect(player.getX() - 6, player.getY() - 6, 27, 27);
+        List<MapCell> nearby = this.findNearbyCells(player.getX(), player.getY());
+        for (MapCell cell: nearby) {
+            cell.draw(this);
+        }
+        boolean eat = player.tick(nearby);
+        this.player.draw(this);
+        if (eat) {
+            this.state = 2;
+        }
     }
 
     public List<MapCell> findNearbyCells(int x, int y) {
@@ -221,37 +256,11 @@ public class App extends PApplet {
         return result;
     }
 
-    public void updatePlayers() {
-        for (Ghost ghost : this.ghosts) {
-            List<MapCell> nearby = this.findNearbyCells(ghost.getX(), ghost.getY());
-            boolean is_killed = ghost.tick(nearby);
-            if (is_killed) {
-                if (this.player.getLife() == 0) {
-                    this.state = 3;
-                }
-            }
-            ghost.draw(this);
-        }
-        // refresh the cells nearby for player
-        this.fill(0);
-        this.rect(player.getX() - 6, player.getY() - 6, 27, 27);
-        List<MapCell> nearby = this.findNearbyCells(player.getX(), player.getY());
-        for (MapCell cell: nearby) {
-            cell.draw(this);
-        }
-        boolean eat = player.tick(nearby);
-        this.player.draw(this);
-        if (eat) {
-            this.state = 1;
-        }
-    }
-
     public void keyPressed() {
         player.turn(keyCode);
     }
 
     public static void main(String[] args) {
          PApplet.main("ghost.App");
-//        System.out.println("Hello");
     }
 }
