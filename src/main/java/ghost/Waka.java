@@ -6,12 +6,7 @@ import processing.core.PImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Waka extends MapCell {
-    private int x;
-    private int y;
-    private int currentDirection;
-    private int nextDirection;
-    private int speed;
+public class Waka extends MovableCell {
     private final PImage left;
     private final PImage right;
     private final PImage up;
@@ -22,24 +17,12 @@ public class Waka extends MapCell {
 
     Waka(PImage[] images, int character, int x, int y) {
         super(images[0], character, x, y);
-        this.x = x * 16;
-        this.y = y * 16;
         this.left = images[0];
         this.right = images[1];
         this.up = images[2];
         this.down = images[3];
         this.closed = images[4];
         this.closeEye = false;
-        this.currentDirection = 0;
-        this.nextDirection = 0;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-    @Override
-    public boolean canPassThrough() {
-        return true;
     }
 
     @Override
@@ -108,27 +91,8 @@ public class Waka extends MapCell {
     }
 
     //handles movement
+    @Override
     public boolean tick(List<MapCell> nearbyCells) {
-        MapCell stepOn = null;
-        for (MapCell cell : nearbyCells) {
-            if (cell.getX() == this.x && cell.getY() == this.y && (cell.getType() == 0 || cell.getType() == 7)) {
-                stepOn = cell;
-            }
-        }
-        //only turn when step on an air or fruit cell, not half way between cells
-        if (this.nextDirection != 0 && stepOn != null) {
-            boolean turnable = true;
-            List<MapCell> nextWalkInto = this.cellWalkInto(nearbyCells, this.nextDirection);
-            for (MapCell nextCell : nextWalkInto) {
-                if (!nextCell.canPassThrough()) {
-                    turnable = false;
-                }
-            }
-            if (turnable) {
-                this.currentDirection = this.nextDirection;
-                this.nextDirection = 0;
-            }
-        }
         //eat fruit
         boolean eat = false;
         for (MapCell cell : nearbyCells) {
@@ -140,60 +104,7 @@ public class Waka extends MapCell {
                 }
             }
         }
-        // stop when move into wall
-        boolean movable = true;
-        List<MapCell> walkInto = this.cellWalkInto(nearbyCells, this.currentDirection);
-        for (MapCell cell : walkInto) {
-            if (!cell.canPassThrough()) {
-                movable = false;
-            }
-        }
-        if (movable) {
-            switch (this.currentDirection) {
-                case 38:
-                    this.y -= this.speed;
-                    break;
-                case 40:
-                    this.y += this.speed;
-                    break;
-                case 37:
-                    this.x -= this.speed;
-                    break;
-                case 39:
-                    this.x += this.speed;
-                    break;
-            }
-        }
+        super.tick(nearbyCells);
         return eat;
-    }
-
-    public List<MapCell> cellWalkInto(List<MapCell> nearbyCells, int direction) {
-        List<MapCell> result = new ArrayList<>();
-        for (MapCell cell : nearbyCells) {
-            switch (direction) {
-                // 38 = Up, 40 = Down, 37 = Left, 39 = Right
-                case 38:
-                    if (this.x == cell.getX() && this.y - 16 == cell.getY()) {
-                        result.add(cell);
-                    }
-                    break;
-                case 40:
-                    if (this.x == cell.getX() && this.y + 16 == cell.getY()) {
-                        result.add(cell);
-                    }
-                    break;
-                case 37:
-                    if (this.x - 16 == cell.getX() && this.y == cell.getY()) {
-                        result.add(cell);
-                    }
-                    break;
-                case 39:
-                    if (this.x + 16 == cell.getX() && this.y == cell.getY()) {
-                        result.add(cell);
-                    }
-                    break;
-            }
-        }
-        return result;
     }
 }
