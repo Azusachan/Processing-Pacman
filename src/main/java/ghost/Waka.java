@@ -92,9 +92,14 @@ public class Waka extends MapCell {
 
     //handles movement
     public boolean tick(List<MapCell> nearbyCells) {
-        // todo: bugfix: wall not working
-        // turn when appropriate
-        if (this.nextDirection != 0) {
+        MapCell stepOn = null;
+        for (MapCell cell : nearbyCells) {
+            if (cell.getX() == this.x && cell.getY() == this.y && (cell.getType() == 0 || cell.getType() == 7)) {
+                stepOn = cell;
+            }
+        }
+        //only turn when step on an air or fruit cell, not half way between cells
+        if (this.nextDirection != 0 && stepOn != null) {
             boolean turnable = true;
             List<MapCell> nextWalkInto = this.cellWalkInto(nearbyCells, this.nextDirection);
             for (MapCell nextCell : nextWalkInto) {
@@ -151,31 +156,23 @@ public class Waka extends MapCell {
             switch (direction) {
                 // 38 = Up, 40 = Down, 37 = Left, 39 = Right
                 case 38:
-                    if ((this.x <= cell.getX() || this.x >= cell.getX()) && this.y - 16 == cell.getY()) {
-                        if (cell.getType() == 1 || cell.getType() == 5 || cell.getType() == 6) {
-                            result.add(cell);
-                        }
+                    if (this.x == cell.getX() && this.y - 16 == cell.getY()) {
+                        result.add(cell);
                     }
                     break;
                 case 40:
-                    if ((this.x <= cell.getX() || this.x >= cell.getX()) && this.y + 16 == cell.getY()) {
-                        if (cell.getType() == 1 || cell.getType() == 3 || cell.getType() == 4) {
-                            result.add(cell);
-                        }
+                    if (this.x == cell.getX() && this.y + 16 == cell.getY()) {
+                        result.add(cell);
                     }
                     break;
                 case 37:
-                    if (this.x - 16 == cell.getX() && (this.y <= cell.getY() || this.y > cell.getY())) {
-                        if (cell.getType() == 2 || cell.getType() == 4 || cell.getType() == 6) {
-                            result.add(cell);
-                        }
+                    if (this.x - 16 == cell.getX() && this.y == cell.getY()) {
+                        result.add(cell);
                     }
                     break;
                 case 39:
-                    if (this.x + 16 == cell.getX() && (this.y <= cell.getY() || this.y > cell.getY())) {
-                        if (cell.getType() == 2 || cell.getType() == 3 || cell.getType() == 5) {
-                            result.add(cell);
-                        }
+                    if (this.x + 16 == cell.getX() && this.y == cell.getY()) {
+                        result.add(cell);
                     }
                     break;
             }
