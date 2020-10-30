@@ -61,6 +61,10 @@ public class Waka extends MapCell {
                     app.image(this.right, this.x - 4, this.y - 5);
             }
         }
+        // render life
+        for (int i = 0; i < this.life; i++) {
+            app.image(this.right, 25 * i,545);
+        }
     }
 
     @Override
@@ -73,6 +77,9 @@ public class Waka extends MapCell {
         return this.y;
     }
 
+    public int getLife() {
+        return this.life;
+    }
     public void closeEye() {
         this.closeEye = !this.closeEye;
     }
@@ -81,10 +88,11 @@ public class Waka extends MapCell {
         this.life = life;
     }
 
-    public boolean dies(){
+    public boolean kill(){
         this.life--;
         return this.life == 0;
     }
+
     // 38 = Up, 40 = Down, 37 = Left, 39 = Right
     public void turn(int keyCode) {
         if (this.currentDirection == 0) {

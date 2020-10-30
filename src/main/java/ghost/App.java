@@ -19,7 +19,7 @@ public class App extends PApplet {
     public List<Fruit> fruits;
     private final JSONObject config;
     public Waka player;
-    // 0: initialize map, 1: update fruits & player & ghost, 2: update player & ghost
+    // 0: initialize map, 1: update fruits & player & ghost, 2: update player & ghost, 3: dies
     private int state;
 
     public void parseMap(String mapFileLocation){
@@ -223,6 +223,13 @@ public class App extends PApplet {
 
     public void updatePlayers() {
         for (Ghost ghost : this.ghosts) {
+            List<MapCell> nearby = this.findNearbyCells(ghost.getX(), ghost.getY());
+            boolean is_killed = ghost.tick(nearby);
+            if (is_killed) {
+                if (this.player.getLife() == 0) {
+                    this.state = 3;
+                }
+            }
             ghost.draw(this);
         }
         // refresh the cells nearby for player
