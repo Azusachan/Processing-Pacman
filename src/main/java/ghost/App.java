@@ -151,6 +151,8 @@ public class App extends PApplet {
             System.exit(0);
         }
         player.setSpeed(speed);
+        int life = ((Long) this.config.get("lives")).intValue();
+        player.setLife(life);
         this.mapCells = mapList;
         this.player = player;
         this.ghosts = ghostList;

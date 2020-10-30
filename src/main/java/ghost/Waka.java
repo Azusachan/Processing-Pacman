@@ -18,6 +18,7 @@ public class Waka extends MapCell {
     private final PImage down;
     private final PImage closed;
     private boolean closeEye;
+    private int life;
 
     Waka(PImage[] images, int character, int x, int y) {
         super(images[0], character, x, y);
@@ -76,6 +77,14 @@ public class Waka extends MapCell {
         this.closeEye = !this.closeEye;
     }
 
+    public void setLife(int life) {
+        this.life = life;
+    }
+
+    public boolean dies(){
+        this.life--;
+        return this.life == 0;
+    }
     // 38 = Up, 40 = Down, 37 = Left, 39 = Right
     public void turn(int keyCode) {
         if (this.currentDirection == 0) {
