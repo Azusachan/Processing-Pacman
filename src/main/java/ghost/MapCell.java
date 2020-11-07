@@ -25,7 +25,7 @@ public class MapCell {
     }
 
     public boolean canPassThrough() {
-        return this.cellImage == null;
+        return this.type == 0;
     }
 
     public int getType() {
@@ -38,4 +38,12 @@ public class MapCell {
         app.image(this.cellImage, this.x, this.y);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof MapCell)) {
+            return false;
+        }
+        MapCell m = (MapCell) o;
+        return m.getX() == this.getX() && m.getY() == this.getY();
+    }
 }

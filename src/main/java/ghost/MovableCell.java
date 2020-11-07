@@ -11,6 +11,7 @@ public class MovableCell extends MapCell{
     public int currentDirection;
     public int nextDirection;
     public int speed;
+    public MapCell walkIntoCell;
     MovableCell(PImage image, int character, int x, int y) {
         super(image, character, x, y);
         this.x = x * 16;
@@ -91,7 +92,9 @@ public class MovableCell extends MapCell{
         boolean movable = true;
         List<MapCell> walkInto = this.cellWalkInto(nearbyCells, this.currentDirection);
         for (MapCell cell : walkInto) {
+            this.walkIntoCell = cell;
             if (!cell.canPassThrough()) {
+                this.walkIntoCell = null;
                 movable = false;
             }
         }

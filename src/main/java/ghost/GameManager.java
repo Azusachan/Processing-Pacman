@@ -1,5 +1,6 @@
 package ghost;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -10,7 +11,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game{
+public class GameManager {
     private static final String EMPTY = "0";
     private static final String HORIZONTAL = "1";
     private static final String VERTICAL = "2";
@@ -32,8 +33,11 @@ public class Game{
     public Waka player;
     // 0: initialize map, 1: update fruits & player & ghost, 2: update player & ghost, 3: dies
     private int state;
+    private int startTime;
+    public int modePointer;
+    public List<Integer> modeLengths;
 
-    public Game() {
+    public GameManager() {
         //Set up your objects
         JSONParser parser = new JSONParser();
         JSONObject configObject = null;
@@ -56,6 +60,9 @@ public class Game{
     }
 
     public void setup(PApplet app) {
+        //start timer
+        this.startTime = app.millis();
+        this.modePointer = 0;
         //load up map
         String mapLocation = (String) this.config.get("map");
         PImage horizontal = app.loadImage("src/main/resources/horizontal.png");
@@ -97,6 +104,17 @@ public class Game{
             System.out.println("Error in config: speed");
             System.exit(0);
         }
+        List<Integer> modeLengths = new ArrayList<>();
+        JSONArray modeLengthsJSON =(JSONArray) this.config.get("modeLengths");
+        if (modeLengthsJSON != null) {
+            for (Object o : modeLengthsJSON) {
+                modeLengths.add(Math.toIntExact((Long) o));
+            }
+        } else {
+            System.out.println("Error in config: modeLengths");
+            System.exit(0);
+        }
+        this.modeLengths = modeLengths;
         MapCell[][] mapList = new MapCell[36][28];
         List<Ghost> ghostList = new ArrayList<>();
         List<Fruit> fruitList = new ArrayList<>();
@@ -140,6 +158,8 @@ public class Game{
                     case GHOST:
                         Ghost newGhost = new Ghost(ghost, 9, col, row);
                         newGhost.setSpeed(speed);
+                        newGhost.setState(1);
+                        newGhost.setMap(mapList);
                         ghostList.add(newGhost);
                         mapList[row][col] = newGhost;
                         break;
@@ -159,6 +179,10 @@ public class Game{
         }
         player.setSpeed(speed);
         int life = ((Long) this.config.get("lives")).intValue();
+        if (life < 0) {
+            System.out.println("Error in config: lives");
+            System.exit(0);
+        }
         player.setLife(life);
         this.mapCells = mapList;
         this.player = player;
@@ -211,8 +235,39 @@ public class Game{
         this.updatePlayers(app);
     }
 
+    public boolean updateTimer(PApplet app){
+        int timer = app.millis() - this.startTime;
+        timer = timer / 1000;
+        int modeLength = this.modeLengths.get(this.modePointer);
+        if (timer >= modeLength) {
+            if (this.modePointer != this.modeLengths.size() - 1) {
+                this.modePointer++;
+            } else {
+                this.modePointer = 0;
+            }
+            this.startTime = app.millis();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void updatePlayers(PApplet app) {
+        boolean changeGhostState = updateTimer(app);
         for (Ghost ghost : this.ghosts) {
+            if (changeGhostState){
+                if (this.modePointer % 2 == 0) {
+                    ghost.setState(1);
+                } else {
+                    ghost.setState(0);
+                }
+                ghost.findTarget();
+            }
+            List<MapCell> nearby = this.findNearbyCells(ghost.getX(), ghost.getY());
+            ghost.tick(nearby);
+            // refresh the cells nearby for ghost
+            app.fill(0);
+            app.rect(ghost.getX() - 7, ghost.getY() - 7, 29, 29);
             ghost.draw(app);
         }
         // refresh the cells nearby for player
@@ -224,9 +279,7 @@ public class Game{
         }
         boolean eat = player.tick(nearby);
         this.player.draw(app);
-        if (eat) {
-            this.state = 2;
-        }
+        this.state = 2;
     }
 
     public List<MapCell> findNearbyCells(int x, int y) {
@@ -244,9 +297,5 @@ public class Game{
 
     public void keyPressed(int keyCode) {
         player.turn(keyCode);
-    }
-
-    public static void main(String[] args) {
-         PApplet.main("ghost.App");
     }
 }

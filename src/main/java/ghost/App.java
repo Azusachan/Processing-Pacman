@@ -3,12 +3,12 @@ package ghost;
 import processing.core.PApplet;
 
 public class App extends PApplet {
-    Game currentGame;
+    GameManager currentGame;
     public static final int WIDTH = 448;
     public static final int HEIGHT = 576;
 
     public App() {
-        currentGame = new Game();
+        currentGame = new GameManager();
     }
 
     public void setup(){

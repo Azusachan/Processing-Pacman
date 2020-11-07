@@ -3,7 +3,6 @@ package ghost;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Waka extends MovableCell {
@@ -23,6 +22,24 @@ public class Waka extends MovableCell {
         this.down = images[3];
         this.closed = images[4];
         this.closeEye = false;
+    }
+
+    @Override
+    public int getX() {
+        if (walkIntoCell != null) {
+            return walkIntoCell.getX();
+        } else {
+            return super.getX();
+        }
+    }
+
+    @Override
+    public int getY() {
+        if (walkIntoCell != null) {
+            return walkIntoCell.getY();
+        } else {
+            return super.getY();
+        }
     }
 
     @Override
@@ -48,16 +65,6 @@ public class Waka extends MovableCell {
         for (int i = 0; i < this.life; i++) {
             app.image(this.right, 25 * i,545);
         }
-    }
-
-    @Override
-    public int getX() {
-        return this.x;
-    }
-
-    @Override
-    public int getY() {
-        return this.y;
     }
 
     public int getLife() {

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AppTest {
     @Test 
     public void simpleTest() {
-        Game classUnderTest = new Game();
+        GameManager classUnderTest = new GameManager();
         assertNotNull(classUnderTest);
     }
 }
