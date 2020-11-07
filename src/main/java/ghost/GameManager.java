@@ -11,6 +11,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ghost.Utility.findNearbyCells;
+
 public class GameManager {
     private static final String EMPTY = "0";
     private static final String HORIZONTAL = "1";
@@ -263,9 +265,32 @@ public class GameManager {
                 }
                 ghost.findTarget();
             }
-            List<MapCell> nearby = this.findNearbyCells(ghost.getX(), ghost.getY());
+            //update player every 16 frames
+            if (ghost.state == 0 && app.frameCount%16 == 0) {
+                int startTime = app.millis();
+                ghost.findTarget();
+                int endTime = app.millis() - startTime;
+                if (endTime > 100) {
+                    System.out.println(endTime);
+                }
+            }
+            List<MapCell> nearby = findNearbyCells(ghost.getX(), ghost.getY(), this.mapCells);
             ghost.tick(nearby);
             // refresh the cells nearby for ghost
+            for (MapCell cell : nearby) {
+                if (cell.getType() == 7) {
+                    app.fill(0);
+                    app.rect(cell.getX(), cell.getY(), 16, 16);
+                    cell.draw(app);
+                } else if (cell.getType() == 9) {
+                    app.fill(0);
+                    app.rect(cell.getX() - 7, cell.getY() - 7, 29, 29);
+                    cell.draw(app);
+                }
+            }
+        }
+        // ensure ghost is above map
+        for (Ghost ghost : this.ghosts) {
             app.fill(0);
             app.rect(ghost.getX() - 7, ghost.getY() - 7, 29, 29);
             ghost.draw(app);
@@ -273,26 +298,21 @@ public class GameManager {
         // refresh the cells nearby for player
         app.fill(0);
         app.rect(player.getX() - 6, player.getY() - 6, 27, 27);
-        List<MapCell> nearby = this.findNearbyCells(player.getX(), player.getY());
+        List<MapCell> nearby = findNearbyCells(player.getX(), player.getY(), this.mapCells);
         for (MapCell cell: nearby) {
             cell.draw(app);
         }
         boolean eat = player.tick(nearby);
         this.player.draw(app);
-        this.state = 2;
-    }
-
-    public List<MapCell> findNearbyCells(int x, int y) {
-        List<MapCell> result = new ArrayList<>();
-        for (MapCell[] cellList: this.mapCells) {
-            for (MapCell cell: cellList) {
-                // find 3x3 squares nearby
-                if (Math.abs(cell.getX() - (x + 8)) <= 24 && Math.abs(cell.getY() - (y + 8)) <= 24) {
-                    result.add(cell);
+        if (eat) {
+            for (MapCell cell : nearby) {
+                if (cell.getType() == 7) {
+                    app.fill(0);
+                    app.rect(cell.getX(), cell.getY(), 16, 16);
+                    cell.draw(app);
                 }
             }
         }
-        return result;
     }
 
     public void keyPressed(int keyCode) {

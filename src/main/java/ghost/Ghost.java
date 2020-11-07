@@ -5,6 +5,8 @@ import processing.core.PImage;
 
 import java.util.*;
 
+import static ghost.Utility.findNearbyCells;
+
 public class Ghost extends MovableCell{
     private final PImage ghostImage;
     public static final int CHASE = 0;
@@ -34,27 +36,34 @@ public class Ghost extends MovableCell{
 
     @Override
     public boolean tick(List<MapCell> nearbyCells) {
-        if (this.route == null) {
+        if (this.route == null || this.route.size() == 0) {
             this.findTarget();
         }
         MapCell current = this.route.get(this.routePointer);
         // 38 = Up, 40 = Down, 37 = Left, 39 = Right
         if (current.getX() == this.getX() && current.getY() < this.getY()) {
             this.y -= this.speed;
-        } else if (current.getX() == this.getX()
-                && current.getY() > this.getY()) {
+        } else if (current.getX() == this.getX() && current.getY() > this.getY()) {
             this.y += this.speed;
-        } else if (current.getX() < this.getX()
-                && current.getY() == this.getY()) {
+        } else if (current.getX() < this.getX() && current.getY() == this.getY()) {
             this.x -= this.speed;
-        } else if (current.getX() > this.getX()
-                && current.getY() == this.getY()) {
+        } else if (current.getX() > this.getX() && current.getY() == this.getY()) {
             this.x += this.speed;
+        } else if (current.getX() != this.getX() && current.getY() != this.getY()) {
+            // happens when ghost is between cells and refresh route list
+            this.route.add(0, this.stepOnCell);
+            this.routePointer = 0;
         } else if (current.equals(this)) {
             if (!this.equals(this.target)) {
-                this.routePointer++;
+                if (this.routePointer == this.route.size() - 1) {
+                    this.findTarget();
+                } else {
+                    this.routePointer++;
+                }
             }
         }
+        super.stepOn(nearbyCells);
+
         //kill player
         boolean kill = false;
         if (this.player == null) {
@@ -130,19 +139,24 @@ public class Ghost extends MovableCell{
 
         Queue<MapCellChild> queue = new LinkedList<>();
         List<MapCell> visited = new ArrayList<>();
-        queue.add(new MapCellChild(this, null));
-
+        // fix issue of function when Ghost is between cells
+        if (this.stepOnCell != null) {
+            queue.add(new MapCellChild(this.stepOnCell, null));
+        } else {
+            queue.add(new MapCellChild(this, null));
+        }
         while (!queue.isEmpty()) {
             MapCellChild current = queue.remove();
 
-            if (current.cell.equals(this.target)) {
-                this.route = trace(current);
-                this.routePointer = 0;
-                return;
-            } else {
-                List<MapCellChild> children = getChildren(current, this.map, visited);
-                queue.addAll(children);
-            }
+            if (this.target.equals(current.cell)) {
+                    this.route = trace(current);
+                    this.routePointer = 0;
+                    return;
+                } else {
+                    List<MapCell> nearbyCells = findNearbyCells(current.cell.getX(), current.cell.getY(), this.map);
+                    List<MapCellChild> children = getChildren(current, nearbyCells, visited);
+                    queue.addAll(children);
+                }
             visited.add(current.cell);
         }
     }
@@ -158,10 +172,9 @@ public class Ghost extends MovableCell{
         return path;
     }
 
-    public static List<MapCellChild> getChildren(MapCellChild current, MapCell[][] map, List<MapCell> visited) {
+    public static List<MapCellChild> getChildren(MapCellChild current, List<MapCell> nearbyCells, List<MapCell> visited) {
         List<MapCellChild> children = new ArrayList<>();
-        for (MapCell[] cells: map) {
-            for (MapCell cell: cells) {
+            for (MapCell cell: nearbyCells) {
                 boolean isVisited = false;
                 for (MapCell visitedCell: visited) {
                     if (cell.equals(visitedCell)) {
@@ -185,7 +198,6 @@ public class Ghost extends MovableCell{
                     children.add(child);
                 }
             }
-        }
         return children;
     }
 

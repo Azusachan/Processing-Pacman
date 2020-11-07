@@ -25,20 +25,17 @@ public class Waka extends MovableCell {
     }
 
     @Override
-    public int getX() {
-        if (walkIntoCell != null) {
-            return walkIntoCell.getX();
-        } else {
-            return super.getX();
+    public boolean equals(Object o) {
+        if (!(o instanceof MapCell)) {
+            return false;
         }
-    }
-
-    @Override
-    public int getY() {
-        if (walkIntoCell != null) {
-            return walkIntoCell.getY();
+        MapCell m = (MapCell) o;
+        if (this.nextCell != null){
+            return m.getX() == this.nextCell.getX() && m.getY() == this.nextCell.getY();
+        } else if (this.stepOnCell != null) {
+            return this.stepOnCell.getX() == m.getX() && this.stepOnCell.getY() == m.getY();
         } else {
-            return super.getY();
+            return super.equals(o);
         }
     }
 
