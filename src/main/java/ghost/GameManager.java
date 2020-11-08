@@ -267,10 +267,7 @@ public class GameManager {
             }
             //update player every 16 frames
             if (ghost.state == 0 && app.frameCount%16 == 0) {
-                int startTime = app.millis();
                 ghost.findTarget();
-                int endTime = app.millis() - startTime;
-                System.out.println(endTime);
             }
             List<MapCell> nearby = findNearbyCells(ghost.getX(), ghost.getY(), this.mapCells);
             ghost.tick(nearby);
@@ -286,13 +283,11 @@ public class GameManager {
                     cell.draw(app);
                 }
             }
-        }
-        // ensure ghost is above map
-        for (Ghost ghost : this.ghosts) {
+            // refresh ghost
             app.fill(0);
             app.rect(ghost.getX() - 7, ghost.getY() - 7, 29, 29);
-            ghost.draw(app);
         }
+
         // refresh the cells nearby for player
         app.fill(0);
         app.rect(player.getX() - 6, player.getY() - 6, 27, 27);
@@ -301,15 +296,13 @@ public class GameManager {
             cell.draw(app);
         }
         boolean eat = player.tick(nearby);
+        // Draw ghost first, then player to ensure player is above ghost as the video shows
+        for (Ghost ghost : this.ghosts) {
+            ghost.draw(app);
+        }
         this.player.draw(app);
         if (eat) {
-            for (MapCell cell : nearby) {
-                if (cell.getType() == 7) {
-                    app.fill(0);
-                    app.rect(cell.getX(), cell.getY(), 16, 16);
-                    cell.draw(app);
-                }
-            }
+            this.state = 2;
         }
     }
 

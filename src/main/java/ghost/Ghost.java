@@ -86,6 +86,7 @@ public class Ghost extends MovableCell{
                 }
             }
         }
+        // update this.stepOn
         super.stepOn(nearbyCells);
 
         return kill;

@@ -8,6 +8,8 @@ import java.util.List;
 public class MovableCell extends MapCell{
     public int x;
     public int y;
+    public final int initialX;
+    public final int initialY;
     public int currentDirection;
     public int nextDirection;
     public int speed;
@@ -17,6 +19,8 @@ public class MovableCell extends MapCell{
         super(image, character, x, y);
         this.x = x * 16;
         this.y = y * 16;
+        this.initialX = this.x;
+        this.initialY = this.y;
     }
 
     @Override
@@ -33,6 +37,10 @@ public class MovableCell extends MapCell{
         this.speed = speed;
     }
 
+    @Override
+    public boolean movable() {
+        return true;
+    }
     @Override
     public boolean canPassThrough() {
         return true;
@@ -73,6 +81,11 @@ public class MovableCell extends MapCell{
         for (MapCell cell : nearbyCells) {
             if (cell.getX() == this.x && cell.getY() == this.y && (cell.getType() == 0 || cell.getType() == 7)) {
                 stepOn = cell;
+            } else if (cell.movable()) {
+                MovableCell movableCell = (MovableCell) cell;
+                if (movableCell.initialX == this.x && movableCell.initialY == this.y) {
+                    stepOn = cell;
+                }
             }
         }
         if (stepOn != null) {
@@ -83,7 +96,7 @@ public class MovableCell extends MapCell{
     public boolean tick(List<MapCell> nearbyCells) {
         MapCell stepOn = this.stepOn(nearbyCells);
         //only turn when step on an air or fruit cell, not half way between cells
-        if (this.nextDirection != 0 && stepOn != null) {
+        if (this.currentDirection == 0 || (this.nextDirection != 0 && stepOn != null)) {
             boolean turnable = true;
             List<MapCell> nextWalkInto = this.cellWalkInto(nearbyCells, this.nextDirection);
             for (MapCell nextCell : nextWalkInto) {

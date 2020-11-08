@@ -9,8 +9,15 @@ public class Utility {
         for (MapCell[] cellList: list) {
             for (MapCell cell: cellList) {
                 // find 3x3 squares nearby
-                if (Math.abs(cell.getX() - (x + 8)) <= 24 && Math.abs(cell.getY() - (y + 8)) <= 24) {
-                    result.add(cell);
+                if (cell.movable()) {
+                    MovableCell movableCell = (MovableCell) cell;
+                    if (Math.abs(movableCell.initialX - (x + 8)) <= 24 && Math.abs(movableCell.initialY - (y + 8)) <= 24) {
+                        result.add(cell);
+                    }
+                } else {
+                    if (Math.abs(cell.getX() - (x + 8)) <= 24 && Math.abs(cell.getY() - (y + 8)) <= 24) {
+                        result.add(cell);
+                    }
                 }
             }
         }

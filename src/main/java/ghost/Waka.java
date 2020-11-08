@@ -31,6 +31,7 @@ public class Waka extends MovableCell {
         }
         MapCell m = (MapCell) o;
         if (this.nextCell != null){
+            // Compare to the cell player moves into when it is moving
             return m.getX() == this.nextCell.getX() && m.getY() == this.nextCell.getY();
         } else if (this.stepOnCell != null) {
             return this.stepOnCell.getX() == m.getX() && this.stepOnCell.getY() == m.getY();
@@ -82,11 +83,7 @@ public class Waka extends MovableCell {
 
     // 38 = Up, 40 = Down, 37 = Left, 39 = Right
     public void turn(int keyCode) {
-        if (this.currentDirection == 0) {
-            this.currentDirection = keyCode;
-        } else {
-            this.nextDirection = keyCode;
-        }
+        this.nextDirection = keyCode;
         // turn when 180 degree
         if (Math.abs(this.nextDirection - this.currentDirection) == 2) {
             this.currentDirection = this.nextDirection;
