@@ -60,6 +60,8 @@ public class Waka extends MovableCell {
             }
         }
         // render life
+        app.fill(0);
+        app.rect(0, 545, 448, 26);
         for (int i = 0; i < this.life; i++) {
             app.image(this.right, 25 * i,545);
         }
@@ -68,6 +70,7 @@ public class Waka extends MovableCell {
     public int getLife() {
         return this.life;
     }
+
     public void closeEye() {
         this.closeEye = !this.closeEye;
     }
@@ -76,9 +79,17 @@ public class Waka extends MovableCell {
         this.life = life;
     }
 
-    public boolean kill(){
+    public void kill(){
         this.life--;
-        return this.life == 0;
+        this.resetPosition();
+    }
+
+    public void resetPosition(){
+        this.x = this.initialX;
+        this.y = this.initialY;
+        this.currentDirection = 0;
+        this.nextDirection = 0;
+        this.closeEye = false;
     }
 
     // 38 = Up, 40 = Down, 37 = Left, 39 = Right

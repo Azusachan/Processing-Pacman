@@ -41,20 +41,11 @@ public class Ghost extends MovableCell{
         //kill player
         boolean kill = false;
         if (this.player == null) {
-            for (MapCell cell : nearbyCells) {
-                if (this.getX() == cell.getX() && this.getY() == cell.getY()) {
-                    if (cell.getType() == 8 ) { // player
-                        this.player = (Waka) cell;
-                        this.player.kill();
-                        kill = true;
-                    }
-                }
-            }
-        } else {
-            if (this.getX() == this.player.getX() && this.getY() == this.player.getY()) {
-                this.player.kill();
-                kill = true;
-            }
+            this.findPlayer();
+        }
+        if (this.x == this.player.x && this.y == this.player.y) {
+            this.player.kill();
+            kill = true;
         }
 
         // reached target (player or wall)
@@ -99,17 +90,23 @@ public class Ghost extends MovableCell{
         this.map = map;
     }
 
+    public void findPlayer() {
+        if (this.player == null) {
+            for (MapCell[] cells : this.map) {
+                for (MapCell cell : cells) {
+                    if (cell.getType() == 8) {
+                        this.player = (Waka) cell;
+                    }
+                }
+            }
+        }
+    }
+
     public void findTarget() {
         switch (this.state) {
             case CHASE:
                 if (this.player == null) {
-                    for (MapCell[] cells : this.map) {
-                        for (MapCell cell : cells) {
-                            if (cell.getType() == 8) {
-                                this.player = (Waka) cell;
-                            }
-                        }
-                    }
+                    this.findPlayer();
                 }
                 this.target = this.player;
                 break;
