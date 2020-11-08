@@ -270,9 +270,7 @@ public class GameManager {
                 int startTime = app.millis();
                 ghost.findTarget();
                 int endTime = app.millis() - startTime;
-                if (endTime > 100) {
-                    System.out.println(endTime);
-                }
+                System.out.println(endTime);
             }
             List<MapCell> nearby = findNearbyCells(ghost.getX(), ghost.getY(), this.mapCells);
             ghost.tick(nearby);

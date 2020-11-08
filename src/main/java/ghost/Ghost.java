@@ -36,9 +36,33 @@ public class Ghost extends MovableCell{
 
     @Override
     public boolean tick(List<MapCell> nearbyCells) {
-        if (this.route == null || this.route.size() == 0) {
+        if (this.route == null) {
             this.findTarget();
         }
+        //kill player
+        boolean kill = false;
+        if (this.player == null) {
+            for (MapCell cell : nearbyCells) {
+                if (this.getX() == cell.getX() && this.getY() == cell.getY()) {
+                    if (cell.getType() == 8 ) { // player
+                        this.player = (Waka) cell;
+                        this.player.kill();
+                        kill = true;
+                    }
+                }
+            }
+        } else {
+            if (this.getX() == this.player.getX() && this.getY() == this.player.getY()) {
+                this.player.kill();
+                kill = true;
+            }
+        }
+
+        // reached target (player or wall)
+        if (this.route.size() == 0 && this.routePointer == 0) {
+            return kill;
+        }
+        // still moving
         MapCell current = this.route.get(this.routePointer);
         // 38 = Up, 40 = Down, 37 = Left, 39 = Right
         if (current.getX() == this.getX() && current.getY() < this.getY()) {
@@ -63,25 +87,6 @@ public class Ghost extends MovableCell{
             }
         }
         super.stepOn(nearbyCells);
-
-        //kill player
-        boolean kill = false;
-        if (this.player == null) {
-            for (MapCell cell : nearbyCells) {
-                if (this.getX() == cell.getX() && this.getY() == cell.getY()) {
-                    if (cell.getType() == 8 ) { // player
-                        this.player = (Waka) cell;
-                        this.player.kill();
-                        kill = true;
-                    }
-                }
-            }
-        } else {
-            if (this.getX() == this.player.getX() && this.getY() == this.player.getY()) {
-                this.player.kill();
-                kill = true;
-            }
-        }
 
         return kill;
     }
@@ -139,6 +144,11 @@ public class Ghost extends MovableCell{
 
         Queue<MapCellChild> queue = new LinkedList<>();
         List<MapCell> visited = new ArrayList<>();
+        List<MapCell> availableCells = new ArrayList<>();
+        for (MapCell[] cells: this.map) {
+            availableCells.addAll(Arrays.asList(cells));
+        }
+
         // fix issue of function when Ghost is between cells
         if (this.stepOnCell != null) {
             queue.add(new MapCellChild(this.stepOnCell, null));
@@ -153,11 +163,12 @@ public class Ghost extends MovableCell{
                     this.routePointer = 0;
                     return;
                 } else {
-                    List<MapCell> nearbyCells = findNearbyCells(current.cell.getX(), current.cell.getY(), this.map);
-                    List<MapCellChild> children = getChildren(current, nearbyCells, visited);
+                    List<MapCell> nearbyCells = findAvailableNearbyCells(current.cell.getX(), current.cell.getY(), availableCells);
+                    List<MapCellChild> children = getChildren(current, nearbyCells);
                     queue.addAll(children);
                 }
-            visited.add(current.cell);
+//            visited.add(current.cell);
+            availableCells.remove(current.cell);
         }
     }
 
@@ -172,17 +183,10 @@ public class Ghost extends MovableCell{
         return path;
     }
 
-    public static List<MapCellChild> getChildren(MapCellChild current, List<MapCell> nearbyCells, List<MapCell> visited) {
+    public static List<MapCellChild> getChildren(MapCellChild current, List<MapCell> nearbyCells) {
         List<MapCellChild> children = new ArrayList<>();
             for (MapCell cell: nearbyCells) {
-                boolean isVisited = false;
-                for (MapCell visitedCell: visited) {
-                    if (cell.equals(visitedCell)) {
-                        isVisited = true;
-                        break;
-                    }
-                }
-                if (!cell.canPassThrough() || isVisited) {
+                if (!cell.canPassThrough()) {
                     continue;
                 }
 
@@ -199,6 +203,17 @@ public class Ghost extends MovableCell{
                 }
             }
         return children;
+    }
+
+    public static List<MapCell> findAvailableNearbyCells(int x, int y, List<MapCell> availableCells) {
+        List<MapCell> result = new ArrayList<>();
+        for (MapCell cell: availableCells) {
+            // find 3x3 squares nearby
+            if (Math.abs(cell.getX() - (x + 8)) <= 24 && Math.abs(cell.getY() - (y + 8)) <= 24) {
+                result.add(cell);
+            }
+        }
+        return result;
     }
 
     private static class MapCellChild{
