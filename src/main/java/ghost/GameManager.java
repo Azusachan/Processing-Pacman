@@ -276,10 +276,6 @@ public class GameManager {
                     app.fill(0);
                     app.rect(cell.getX(), cell.getY(), 16, 16);
                     cell.draw(app);
-                } else if (cell.getType() == 9) {
-                    app.fill(0);
-                    app.rect(cell.getX() - 6, cell.getY() - 6, 28, 28);
-                    cell.draw(app);
                 }
             }
             // clear ghost
