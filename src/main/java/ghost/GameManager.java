@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PImage;
 
 import java.io.*;
@@ -27,6 +28,9 @@ public class GameManager {
     private static final int INITIALIZE = 0;
     private static final int UPDATE_PLAYER = 1;
     private static final int UPDATE_FRUITS = 2;
+    private static final int WIN = 3;
+    private static final int LOSE = 4;
+    private static final int RESET = 5;
 
     public MapCell[][] mapCells;
     public List<Ghost> ghosts;
@@ -82,6 +86,8 @@ public class GameManager {
         playerImages[3] = app.loadImage("src/main/resources/playerDown.png");
         playerImages[4] = app.loadImage("src/main/resources/playerClosed.png");
         PImage ghost = app.loadImage("src/main/resources/ghost.png");
+        PFont font = app.createFont("src/main/resources/PressStart2P-Regular.ttf", 16, false);
+        app.textFont(font);
         List<String> lines = new ArrayList<>();
         try {
             File mapFile = new File(mapLocation);
@@ -175,9 +181,13 @@ public class GameManager {
             System.out.println("Error in map: no player");
             System.exit(0);
         }
+        // create a nullGhost which effectively does nothing when the map does not contain anything
         if (ghostList.isEmpty()) {
-            System.out.println("Error in map: no ghost");
-            System.exit(0);
+            Ghost newGhost = new nullGhost();
+            newGhost.setSpeed(speed);
+            newGhost.setState(1);
+            newGhost.setMap(mapList);
+            ghostList.add(newGhost);
         }
         player.setSpeed(speed);
         int life = ((Long) this.config.get("lives")).intValue();
@@ -190,12 +200,6 @@ public class GameManager {
         this.player = player;
         this.ghosts = ghostList;
         this.fruits = fruitList;
-        // Load map
-        for (MapCell[] line : this.mapCells) {
-            for (MapCell cell : line) {
-                cell.draw(app);
-            }
-        }
     }
 
     public void draw(PApplet app) {
@@ -213,10 +217,21 @@ public class GameManager {
             case UPDATE_FRUITS:
                 this.updateFruits(app);
                 break;
+            case WIN:
+                this.win(app);
+                break;
+            case LOSE:
+                this.lose(app);
+                break;
+            case RESET:
+                this.reset(app);
+                break;
         }
     }
 
     public void initMap(PApplet app) {
+        app.fill(0);
+        app.rect(0, 0, 448, 576);
         for (MapCell[] line : this.mapCells) {
             for (MapCell cell : line) {
                 cell.draw(app);
@@ -224,7 +239,7 @@ public class GameManager {
         }
         //Make sure Ghosts and Players are above Fruits
         this.updatePlayers(app);
-        this.state = 1;
+        this.state = UPDATE_PLAYER;
     }
 
     public void updateFruits(PApplet app) {
@@ -233,8 +248,40 @@ public class GameManager {
             app.rect(f.getX(), f.getY(), 16, 16);
             f.draw(app);
         }
-        this.state = 1;
+        this.state = UPDATE_PLAYER;
+        boolean isGameFinished = this.fruits.parallelStream().allMatch(Fruit::isEaten);
+        if (isGameFinished) {
+            this.state = WIN;
+        }
         this.updatePlayers(app);
+    }
+
+    public void win(PApplet app) {
+        app.fill(0);
+        app.rect(0, 0, 448, 576);
+        app.fill(255);
+        app.textAlign(app.CENTER);
+        app.text("YOU WIN", 224, 288);
+        this.state = RESET;
+    }
+
+    public void lose(PApplet app) {
+        app.fill(0);
+        app.rect(0, 0, 448, 576);
+        app.fill(255);
+        app.textAlign(app.CENTER);
+        app.text("GAME OVER", 224, 288);
+        this.state = RESET;
+    }
+
+    public void reset(PApplet app) {
+        app.delay(10000);
+        this.startTime = app.millis();
+        this.modePointer = 0;
+        this.ghosts.parallelStream().forEach(Ghost::resetPosition);
+        this.fruits.parallelStream().forEach(Fruit::restore);
+        this.player.resetPosition();
+        this.state = INITIALIZE;
     }
 
     public boolean updateTimer(PApplet app){
@@ -256,6 +303,7 @@ public class GameManager {
 
     public void updatePlayers(PApplet app) {
         boolean changeGhostState = updateTimer(app);
+        boolean killedByGhost = false;
         for (Ghost ghost : this.ghosts) {
             if (changeGhostState){
                 if (this.modePointer % 2 == 0) {
@@ -281,9 +329,17 @@ public class GameManager {
             // clear ghost
             app.fill(0);
             app.rect(ghost.getX() - 6, ghost.getY() - 6, 28, 28);
-            ghost.tick(nearby);
+            boolean killed = ghost.tick(nearby);
+            if (killed) {
+                killedByGhost = true;
+            }
         }
-
+        if (killedByGhost) {
+            this.player.kill();
+        }
+        if (this.player.getLife() == 0) {
+            this.state = LOSE;
+        }
         // refresh the cells nearby for player
         app.fill(0);
         app.rect(player.getX() - 6, player.getY() - 6, 27, 27);
@@ -298,7 +354,7 @@ public class GameManager {
         }
         this.player.draw(app);
         if (eat) {
-            this.state = 2;
+            this.state = UPDATE_FRUITS;
         }
     }
 

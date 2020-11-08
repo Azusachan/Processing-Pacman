@@ -9,6 +9,7 @@ public class Utility {
         for (MapCell[] cellList: list) {
             for (MapCell cell: cellList) {
                 // find 3x3 squares nearby
+                // Returns movable cell when it is at its original position
                 if (cell.movable()) {
                     MovableCell movableCell = (MovableCell) cell;
                     if (Math.abs(movableCell.initialX - (x + 8)) <= 24 && Math.abs(movableCell.initialY - (y + 8)) <= 24) {

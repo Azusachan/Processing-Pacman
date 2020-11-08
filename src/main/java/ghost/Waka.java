@@ -12,6 +12,7 @@ public class Waka extends MovableCell {
     private final PImage down;
     private final PImage closed;
     private boolean closeEye;
+    private int initialLife;
     private int life;
 
     Waka(PImage[] images, int character, int x, int y) {
@@ -77,19 +78,21 @@ public class Waka extends MovableCell {
 
     public void setLife(int life) {
         this.life = life;
+        this.initialLife = life;
     }
 
     public void kill(){
-        this.life--;
-        this.resetPosition();
+        if (!this.invincible) {
+            this.life--;
+        }
+        this.invincible = true;
+        super.resetPosition();
     }
 
     public void resetPosition(){
-        this.x = this.initialX;
-        this.y = this.initialY;
-        this.currentDirection = 0;
-        this.nextDirection = 0;
+        super.resetPosition();
         this.closeEye = false;
+        this.life = this.initialLife;
     }
 
     // 38 = Up, 40 = Down, 37 = Left, 39 = Right

@@ -38,48 +38,46 @@ public class Ghost extends MovableCell{
         if (this.route == null) {
             this.findTarget();
         }
-        //kill player
-        boolean kill = false;
+
+        boolean killed = false;
         if (this.player == null) {
             this.findPlayer();
         }
         if (this.x == this.player.x && this.y == this.player.y) {
-            this.player.kill();
-            kill = true;
+            killed = true;
         }
 
-        // reached target (player or wall)
-        if (this.route.size() == 0 && this.routePointer == 0) {
-            return kill;
-        }
-        // still moving
-        MapCell current = this.route.get(this.routePointer);
-        // 38 = Up, 40 = Down, 37 = Left, 39 = Right
-        if (current.getX() == this.getX() && current.getY() < this.getY()) {
-            this.y -= this.speed;
-        } else if (current.getX() == this.getX() && current.getY() > this.getY()) {
-            this.y += this.speed;
-        } else if (current.getX() < this.getX() && current.getY() == this.getY()) {
-            this.x -= this.speed;
-        } else if (current.getX() > this.getX() && current.getY() == this.getY()) {
-            this.x += this.speed;
-        } else if (current.getX() != this.getX() && current.getY() != this.getY()) {
-            // happens when ghost is between cells and refresh route list
-            this.route.add(0, this.stepOnCell);
-            this.routePointer = 0;
-        } else if (current.equals(this)) {
-            if (!this.equals(this.target)) {
-                if (this.routePointer == this.route.size() - 1) {
-                    this.findTarget();
-                } else {
-                    this.routePointer++;
+        // stop when reached target (player or wall)
+        if (!(this.route.size() == 0 && this.routePointer == 0)) {
+            // still moving
+            MapCell current = this.route.get(this.routePointer);
+            // 38 = Up, 40 = Down, 37 = Left, 39 = Right
+            if (current.getX() == this.getX() && current.getY() < this.getY()) {
+                this.y -= this.speed;
+            } else if (current.getX() == this.getX() && current.getY() > this.getY()) {
+                this.y += this.speed;
+            } else if (current.getX() < this.getX() && current.getY() == this.getY()) {
+                this.x -= this.speed;
+            } else if (current.getX() > this.getX() && current.getY() == this.getY()) {
+                this.x += this.speed;
+            } else if (current.getX() != this.getX() && current.getY() != this.getY()) {
+                // happens when ghost is between cells and refresh route list
+                this.route.add(0, this.stepOnCell);
+                this.routePointer = 0;
+            } else if (current.equals(this)) {
+                if (!this.equals(this.target)) {
+                    if (this.routePointer == this.route.size() - 1) {
+                        this.findTarget();
+                    } else {
+                        this.routePointer++;
+                    }
                 }
             }
         }
         // update this.stepOn
         super.stepOn(nearbyCells);
 
-        return kill;
+        return killed;
     }
 
     public void setState(int state) {
@@ -220,5 +218,14 @@ public class Ghost extends MovableCell{
             this.cell = cell;
             this.parentCell = parentCell;
         }
+    }
+
+    @Override
+    public void resetPosition() {
+        super.resetPosition();
+        this.state = 1;
+        this.target = null;
+        this.route = null;
+        this.routePointer = 0;
     }
 }

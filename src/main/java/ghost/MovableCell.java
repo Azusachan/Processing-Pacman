@@ -13,8 +13,10 @@ public class MovableCell extends MapCell{
     public int currentDirection;
     public int nextDirection;
     public int speed;
+    public boolean invincible;
     public MapCell stepOnCell;
     public MapCell nextCell;
+
     MovableCell(PImage image, int character, int x, int y) {
         super(image, character, x, y);
         this.x = x * 16;
@@ -93,6 +95,7 @@ public class MovableCell extends MapCell{
         }
         return stepOn;
     }
+
     public boolean tick(List<MapCell> nearbyCells) {
         MapCell stepOn = this.stepOn(nearbyCells);
         //only turn when step on an air or fruit cell, not half way between cells
@@ -137,5 +140,15 @@ public class MovableCell extends MapCell{
             }
         }
         return movable;
+    }
+
+    public void resetPosition() {
+        this.x = this.initialX;
+        this.y = this.initialY;
+        this.currentDirection = 0;
+        this.nextDirection = 0;
+        this.stepOnCell = null;
+        this.nextCell = null;
+        this.invincible = this.getType() != 8;
     }
 }

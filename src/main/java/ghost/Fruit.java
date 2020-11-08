@@ -28,6 +28,10 @@ public class Fruit extends MapCell {
         this.isEaten = true;
     }
 
+    public void restore() {
+        this.isEaten = false;
+    }
+
     public boolean isEaten() {
         return this.isEaten;
     }
