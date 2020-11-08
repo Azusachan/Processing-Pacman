@@ -60,19 +60,19 @@ public class Ghost extends MovableCell{
             // still moving
             MapCell current = this.route.get(this.routePointer);
             // 38 = Up, 40 = Down, 37 = Left, 39 = Right
-            if (current.getX() == this.getX() && current.getY() < this.getY()) {
+            if (current.getX() == this.x && current.getY() < this.y) {
                 this.currentDirection = 40;
                 this.y -= this.speed;
-            } else if (current.getX() == this.getX() && current.getY() > this.getY()) {
+            } else if (current.getX() == this.x && current.getY() > this.y) {
                 this.currentDirection = 38;
                 this.y += this.speed;
-            } else if (current.getX() < this.getX() && current.getY() == this.getY()) {
+            } else if (current.getX() < this.x && current.getY() == this.y) {
                 this.currentDirection = 37;
                 this.x -= this.speed;
-            } else if (current.getX() > this.getX() && current.getY() == this.getY()) {
+            } else if (current.getX() > this.x && current.getY() == this.y) {
                 this.currentDirection = 39;
                 this.x += this.speed;
-            } else if (current.getX() != this.getX() && current.getY() != this.getY()) {
+            } else if (current.getX() != this.x && current.getY() != this.y) {
                 // happens when ghost is between cells and refresh route list
                 this.route.add(0, this.stepOnCell);
                 this.routePointer = 0;

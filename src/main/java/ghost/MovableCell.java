@@ -42,6 +42,7 @@ public class MovableCell extends MapCell{
     public boolean movable() {
         return true;
     }
+
     @Override
     public boolean cannotPassThrough() {
         return false;
@@ -85,7 +86,8 @@ public class MovableCell extends MapCell{
             } else if (cell.movable()) {
                 MovableCell movableCell = (MovableCell) cell;
                 if (movableCell.initialX == this.x && movableCell.initialY == this.y) {
-                    stepOn = cell;
+                    stepOn = new MapCell(null, cell.getType(),
+                            movableCell.initialX / 16, movableCell.initialY / 16);
                 }
             }
         }
