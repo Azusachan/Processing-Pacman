@@ -5,7 +5,6 @@ import processing.core.PImage;
 
 import java.util.*;
 
-import static ghost.Utility.findNearbyCells;
 
 public class Ghost extends MovableCell{
     private final PImage ghostImage;
@@ -144,7 +143,6 @@ public class Ghost extends MovableCell{
         }
 
         Queue<MapCellChild> queue = new LinkedList<>();
-        List<MapCell> visited = new ArrayList<>();
         List<MapCell> availableCells = new ArrayList<>();
         for (MapCell[] cells: this.map) {
             availableCells.addAll(Arrays.asList(cells));
@@ -187,7 +185,7 @@ public class Ghost extends MovableCell{
     public static List<MapCellChild> getChildren(MapCellChild current, List<MapCell> nearbyCells) {
         List<MapCellChild> children = new ArrayList<>();
             for (MapCell cell: nearbyCells) {
-                if (!cell.canPassThrough()) {
+                if (cell.cannotPassThrough()) {
                     continue;
                 }
 

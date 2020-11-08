@@ -42,8 +42,8 @@ public class MovableCell extends MapCell{
         return true;
     }
     @Override
-    public boolean canPassThrough() {
-        return true;
+    public boolean cannotPassThrough() {
+        return false;
     }
 
     public List<MapCell> cellWalkInto(List<MapCell> nearbyCells, int direction) {
@@ -100,7 +100,7 @@ public class MovableCell extends MapCell{
             boolean turnable = true;
             List<MapCell> nextWalkInto = this.cellWalkInto(nearbyCells, this.nextDirection);
             for (MapCell nextCell : nextWalkInto) {
-                if (!nextCell.canPassThrough()) {
+                if (nextCell.cannotPassThrough()) {
                     turnable = false;
                 }
             }
@@ -114,7 +114,7 @@ public class MovableCell extends MapCell{
         List<MapCell> walkInto = this.cellWalkInto(nearbyCells, this.currentDirection);
         for (MapCell cell : walkInto) {
             this.nextCell = cell;
-            if (!cell.canPassThrough()) {
+            if (cell.cannotPassThrough()) {
                 this.nextCell = null;
                 movable = false;
             }

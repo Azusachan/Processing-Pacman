@@ -5,7 +5,6 @@ import processing.core.PImage;
 
 public class MapCell {
     private final PImage cellImage;
-    public static final boolean movable = false;
     public int type;
     private final int x;
     private final int y;
@@ -28,8 +27,8 @@ public class MapCell {
     public boolean movable() {
         return false;
     }
-    public boolean canPassThrough() {
-        return this.type == 0;
+    public boolean cannotPassThrough() {
+        return this.type != 0;
     }
 
     public int getType() {

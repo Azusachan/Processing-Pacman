@@ -20,8 +20,8 @@ public class Fruit extends MapCell {
     }
 
     @Override
-    public boolean canPassThrough() {
-        return true;
+    public boolean cannotPassThrough() {
+        return false;
     }
 
     public void eaten() {
