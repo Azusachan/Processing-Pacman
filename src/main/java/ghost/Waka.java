@@ -85,9 +85,7 @@ public class Waka extends MovableCell {
     }
 
     public void kill(){
-        if (!this.invincible) {
-            this.life--;
-        }
+        this.life--;
         super.resetPosition();
     }
 

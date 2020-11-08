@@ -42,7 +42,8 @@ public class GameManager {
     public List<Fruit> fruits;
     private final JSONObject config;
     public Waka player;
-    // 0: initialize map, 1: update fruits & player & ghost, 2: update player & ghost, 3: dies
+
+    private boolean debug;
     private int state;
     private int startTime;
     public int modePointer;
@@ -68,6 +69,7 @@ public class GameManager {
             System.exit(0);
         }
         this.config = configObject;
+        this.debug = false;
     }
 
     public void setup(PApplet app) {
@@ -326,6 +328,15 @@ public class GameManager {
     }
 
     public void updatePlayers(PApplet app) {
+        if (this.debug) {
+            app.fill(0);
+            app.rect(0, 0, 448, 576);
+            for (MapCell[] line : this.mapCells) {
+                for (MapCell cell : line) {
+                    cell.draw(app);
+                }
+            }
+        }
         boolean changeGhostState = this.updateTimer(app);
         boolean killedByGhost = false;
         for (Ghost ghost : this.ghosts) {
@@ -380,6 +391,30 @@ public class GameManager {
         boolean eat = player.tick(nearby);
         // Draw ghost first, then player to ensure player is above ghost as the video shows
         for (Ghost ghost : this.ghosts) {
+            if (this.debug && !killedByGhost) {
+                app.stroke(255, 255, 0);
+//                if (ghost.state == 1) {
+//                    switch (ghost.targetCorner) {
+//                        case 0:
+//                            app.line(ghost.getX() + 8, ghost.getY() + 8, 0, 0);
+//                            break;
+//                        case 1:
+//                            app.line(ghost.getX() + 8, ghost.getY() + 8, 448, 0);
+//                            break;
+//                        case 2:
+//                            app.line(ghost.getX() + 8, ghost.getY() + 8, 0, 576);
+//                            break;
+//                        case 3:
+//                            app.line(ghost.getX() + 8, ghost.getY() + 8, 448, 576);
+//                            break;
+//                    }
+//                } else {
+//                    app.line(ghost.getX() + 8, ghost.getY() + 8,
+//                            ghost.target.getX() + 8, ghost.target.getY() + 8);
+//                }
+                app.line(ghost.getX() + 8, ghost.getY() + 8,
+                        ghost.target.getX() + 8, ghost.target.getY() + 8);
+            }
             ghost.draw(app);
         }
         this.player.draw(app);
@@ -389,6 +424,10 @@ public class GameManager {
     }
 
     public void keyPressed(int keyCode) {
-        player.turn(keyCode);
+        if (keyCode == 32) {
+            this.debug = !this.debug;
+        } else {
+            player.turn(keyCode);
+        }
     }
 }

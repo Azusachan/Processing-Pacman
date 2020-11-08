@@ -25,6 +25,7 @@ public class Ghost extends MovableCell{
     private static int frightenedDuration;
     private int routePointer;
     private int frightenedTimer;
+    public int targetCorner;
 
     Ghost(PImage[] images, int character, int x, int y) {
         super(images[0], character, x, y);
@@ -60,12 +61,16 @@ public class Ghost extends MovableCell{
             MapCell current = this.route.get(this.routePointer);
             // 38 = Up, 40 = Down, 37 = Left, 39 = Right
             if (current.getX() == this.getX() && current.getY() < this.getY()) {
+                this.currentDirection = 40;
                 this.y -= this.speed;
             } else if (current.getX() == this.getX() && current.getY() > this.getY()) {
+                this.currentDirection = 38;
                 this.y += this.speed;
             } else if (current.getX() < this.getX() && current.getY() == this.getY()) {
+                this.currentDirection = 37;
                 this.x -= this.speed;
             } else if (current.getX() > this.getX() && current.getY() == this.getY()) {
+                this.currentDirection = 39;
                 this.x += this.speed;
             } else if (current.getX() != this.getX() && current.getY() != this.getY()) {
                 // happens when ghost is between cells and refresh route list
@@ -162,9 +167,9 @@ public class Ghost extends MovableCell{
             case SCATTER:
                 MapCell[] cornerCells = new MapCell[4];
                 cornerCells[0] = findClosestMovableCell(0, 0, map);
-                cornerCells[1] = findClosestMovableCell(0, 448, map);
-                cornerCells[2] = findClosestMovableCell(576, 0, map);
-                cornerCells[3] = findClosestMovableCell(576, 448, map);
+                cornerCells[1] = findClosestMovableCell(448, 0, map);
+                cornerCells[2] = findClosestMovableCell(0, 576, map);
+                cornerCells[3] = findClosestMovableCell(448, 576, map);
                 double minDistance = 729.71;
                 MapCell targetCell = null;
                 for (MapCell cell: cornerCells) {
@@ -175,14 +180,45 @@ public class Ghost extends MovableCell{
                     }
                 }
                 this.target = targetCell;
+                for (int i = 0; i < 4; i++) {
+                    if (cornerCells[i] == targetCell) {
+                        this.targetCorner = i;
+                    }
+                }
                 break;
             case FRIGHTENED:
                 List<MapCell> availableCells = new ArrayList<>();
-                for (MapCell[] cells: getMap()) {
-                    availableCells.addAll(Arrays.asList(cells).
-                            parallelStream().
-                            filter(cell -> !cell.cannotPassThrough()).
-                            collect(Collectors.toList()));
+
+                switch (this.currentDirection) {
+                    // 38 = Up, 40 = Down, 37 = Left, 39 = Right
+                    case 0:
+                        for (MapCell[] cells: getMap()) {
+                            availableCells.addAll(Arrays.asList(cells).
+                                    parallelStream().
+                                    filter(cell -> !cell.cannotPassThrough()).
+                                    collect(Collectors.toList()));
+                        }
+                        break;
+                    case 38:
+                        availableCells.add(findClosestMovableCell(0, this.y, map));
+                        availableCells.add(findClosestMovableCell(this.x, 0, map));
+                        availableCells.add(findClosestMovableCell(this.x, 576, map));
+                        break;
+                    case 40:
+                        availableCells.add(findClosestMovableCell(448, this.y, map));
+                        availableCells.add(findClosestMovableCell(this.x, 0, map));
+                        availableCells.add(findClosestMovableCell(this.x, 576, map));
+                        break;
+                    case 37:
+                        availableCells.add(findClosestMovableCell(this.x, 0, map));
+                        availableCells.add(findClosestMovableCell(0, this.y, map));
+                        availableCells.add(findClosestMovableCell(448, this.y, map));
+                        break;
+                    case 39:
+                        availableCells.add(findClosestMovableCell(this.x, 576, map));
+                        availableCells.add(findClosestMovableCell(0, this.y, map));
+                        availableCells.add(findClosestMovableCell(448, this.y, map));
+                        break;
                 }
                 int randomPointer = (int) ((Math.random() * (availableCells.size() - 1)));
                 this.target = availableCells.get(randomPointer);

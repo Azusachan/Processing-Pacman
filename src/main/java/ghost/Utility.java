@@ -45,7 +45,13 @@ public class Utility {
             }
         }
         for (MapCell cell: cells) {
-            double distance = Math.sqrt(Math.pow(cell.getX() - x, 2) + Math.pow(cell.getY() - y, 2));
+            double distance;
+            if (cell.movable()) {
+                MovableCell movableCell = (MovableCell) cell;
+                distance = Math.sqrt(Math.pow(movableCell.initialX - x, 2) + Math.pow(movableCell.initialY - y, 2));
+            } else {
+                distance = Math.sqrt(Math.pow(cell.getX() - x, 2) + Math.pow(cell.getY() - y, 2));
+            }
             if (distance < minimumDistance && !cell.cannotPassThrough()) {
                 minimumDistance = distance;
                 result = cell;

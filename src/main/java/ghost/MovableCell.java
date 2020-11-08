@@ -13,7 +13,6 @@ public class MovableCell extends MapCell{
     public int currentDirection;
     public int nextDirection;
     public int speed;
-    public boolean invincible;
     public MapCell stepOnCell;
     public MapCell nextCell;
 
@@ -149,6 +148,5 @@ public class MovableCell extends MapCell{
         this.nextDirection = 0;
         this.stepOnCell = null;
         this.nextCell = null;
-        this.invincible = this.getType() != 8;
     }
 }
