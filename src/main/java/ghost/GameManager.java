@@ -270,8 +270,7 @@ public class GameManager {
                 ghost.findTarget();
             }
             List<MapCell> nearby = findNearbyCells(ghost.getX(), ghost.getY(), this.mapCells);
-            ghost.tick(nearby);
-            // refresh the cells nearby for ghost
+            // clear the cells nearby for ghost
             for (MapCell cell : nearby) {
                 if (cell.getType() == 7) {
                     app.fill(0);
@@ -279,13 +278,14 @@ public class GameManager {
                     cell.draw(app);
                 } else if (cell.getType() == 9) {
                     app.fill(0);
-                    app.rect(cell.getX() - 7, cell.getY() - 7, 29, 29);
+                    app.rect(cell.getX() - 6, cell.getY() - 6, 28, 28);
                     cell.draw(app);
                 }
             }
-            // refresh ghost
+            // clear ghost
             app.fill(0);
-            app.rect(ghost.getX() - 7, ghost.getY() - 7, 29, 29);
+            app.rect(ghost.getX() - 6, ghost.getY() - 6, 28, 28);
+            ghost.tick(nearby);
         }
 
         // refresh the cells nearby for player
