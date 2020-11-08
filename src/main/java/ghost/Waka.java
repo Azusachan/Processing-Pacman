@@ -31,14 +31,17 @@ public class Waka extends MovableCell {
             return false;
         }
         MapCell m = (MapCell) o;
-        if (this.nextCell != null){
-            // Compare to the cell player moves into when it is moving
-            return m.getX() == this.nextCell.getX() && m.getY() == this.nextCell.getY();
-        } else if (this.stepOnCell != null) {
-            return this.stepOnCell.getX() == m.getX() && this.stepOnCell.getY() == m.getY();
+        boolean result = false;
+        if (this.stepOnCell != null) {
+            if (this.stepOnCell.getX() == m.getX() && this.stepOnCell.getY() == m.getY()) {
+                result = true;
+            }
         } else {
-            return super.equals(o);
+            if (super.equals(o)) {
+                result = true;
+            }
         }
+        return result;
     }
 
     @Override
@@ -85,7 +88,6 @@ public class Waka extends MovableCell {
         if (!this.invincible) {
             this.life--;
         }
-        this.invincible = true;
         super.resetPosition();
     }
 
@@ -112,7 +114,7 @@ public class Waka extends MovableCell {
         boolean edible = false;
         for (MapCell cell : nearbyCells) {
             if (this.getX() == cell.getX() && this.getY() == cell.getY()) {
-                if (cell.getType() == 7) { //fruit
+                if (cell.getType() == 7 || cell.getType() == 14) { //fruit
                     Fruit fruit = (Fruit) cell;
                     if (!fruit.isEaten()) {
                         fruit.eaten();

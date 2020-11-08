@@ -4,10 +4,10 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class MapCell {
-    private final PImage cellImage;
+    public final PImage cellImage;
     public int type;
-    private final int x;
-    private final int y;
+    public final int x;
+    public final int y;
 
     MapCell(PImage image, int character, int x, int y) {
         this.cellImage = image;

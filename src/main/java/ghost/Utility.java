@@ -24,4 +24,33 @@ public class Utility {
         }
         return result;
     }
+
+    public static MapCell findClosestMovableCell(int x, int y, MapCell[][] list) {
+        double minimumDistance = 9999;
+        MapCell result = null;
+        boolean isValid = false;
+        List<MapCell> cells = new ArrayList<>();
+        for (MapCell[] cellList: list) {
+            int counter = 0;
+            for (MapCell cell : cellList) {
+                if (cell.getType() == 1) {
+                    counter++;
+                }
+                if (isValid) {
+                    cells.add(cell);
+                }
+            }
+            if (counter > 20) {
+                isValid = !isValid;
+            }
+        }
+        for (MapCell cell: cells) {
+            double distance = Math.sqrt(Math.pow(cell.getX() - x, 2) + Math.pow(cell.getY() - y, 2));
+            if (distance < minimumDistance && !cell.cannotPassThrough()) {
+                minimumDistance = distance;
+                result = cell;
+            }
+        }
+        return result;
+    }
 }

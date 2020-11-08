@@ -23,8 +23,13 @@ public class GameManager {
     private static final String DOWN_LEFT = "5";
     private static final String DOWN_RIGHT = "6";
     private static final String FRUIT = "7";
+    public static final String SUPER_FRUIT = "8";
     private static final String WAKA = "p";
     private static final String GHOST = "g";
+    private static final String AMBUSHER = "a";
+    private static final String CHASER = "c";
+    private static final String IGNORANT = "i";
+    private static final String WHIM = "w";
     private static final int INITIALIZE = 0;
     private static final int UPDATE_PLAYER = 1;
     private static final int UPDATE_FRUITS = 2;
@@ -71,6 +76,10 @@ public class GameManager {
         this.modePointer = 0;
         //load up map
         String mapLocation = (String) this.config.get("map");
+        if (mapLocation == null) {
+            System.out.println("Error in config: map");
+            System.exit(0);
+        }
         PImage horizontal = app.loadImage("src/main/resources/horizontal.png");
         PImage vertical = app.loadImage("src/main/resources/vertical.png");
         PImage upLeft = app.loadImage("src/main/resources/upLeft.png");
@@ -78,6 +87,8 @@ public class GameManager {
         PImage downLeft = app.loadImage("src/main/resources/downLeft.png");
         PImage downRight = app.loadImage("src/main/resources/downRight.png");
         PImage fruit = app.loadImage("src/main/resources/fruit.png");
+        PImage superFruit = app.loadImage("src/main/resources/superFruit.png");
+
         PImage[] playerImages = new PImage[5];
         //[left, right, up, down, closed]
         playerImages[0] = app.loadImage("src/main/resources/playerLeft.png");
@@ -85,7 +96,12 @@ public class GameManager {
         playerImages[2] = app.loadImage("src/main/resources/playerUp.png");
         playerImages[3] = app.loadImage("src/main/resources/playerDown.png");
         playerImages[4] = app.loadImage("src/main/resources/playerClosed.png");
-        PImage ghost = app.loadImage("src/main/resources/ghost.png");
+        PImage ghostFrightened = app.loadImage("src/main/resources/frightened.png");
+        PImage[] ghost = new PImage[]{app.loadImage("src/main/resources/ghost.png"), ghostFrightened};
+        PImage[] ambusher = new PImage[]{app.loadImage("src/main/resources/ambusher.png"), ghostFrightened};
+        PImage[] chaser = new PImage[]{app.loadImage("src/main/resources/chaser.png"), ghostFrightened};
+        PImage[] ignorant = new PImage[]{app.loadImage("src/main/resources/ignorant.png"), ghostFrightened};
+        PImage[] whim = new PImage[]{app.loadImage("src/main/resources/whim.png"), ghostFrightened};
         PFont font = app.createFont("src/main/resources/PressStart2P-Regular.ttf", 16, false);
         app.textFont(font);
         List<String> lines = new ArrayList<>();
@@ -108,7 +124,7 @@ public class GameManager {
             System.exit(0);
         }
         int speed = ((Long) this.config.get("speed")).intValue();
-        if (speed > 2 || speed < 0) {
+        if (speed > 2 || speed <= 0) {
             System.out.println("Error in config: speed");
             System.exit(0);
         }
@@ -122,11 +138,15 @@ public class GameManager {
             System.out.println("Error in config: modeLengths");
             System.exit(0);
         }
+        int frightened = ((Long) this.config.get("frightenedLength")).intValue();
         this.modeLengths = modeLengths;
         MapCell[][] mapList = new MapCell[36][28];
         List<Ghost> ghostList = new ArrayList<>();
         List<Fruit> fruitList = new ArrayList<>();
         Waka player = null;
+        Ghost.setFrightenedDuration(frightened);
+        Ghost.setMap(mapList);
+        SuperFruit.setGhost(ghostList);
         for (int row = 0; row < lines.size(); row++) {
             String line = lines.get(row);
             for (int col = 0; col < line.length(); col++) {
@@ -158,6 +178,11 @@ public class GameManager {
                         fruitList.add(newFruit);
                         mapList[row][col] = newFruit;
                         break;
+                    case SUPER_FRUIT:
+                        SuperFruit newSuperFruit = new SuperFruit(superFruit, 14, col, row);
+                        fruitList.add(newSuperFruit);
+                        mapList[row][col] = newSuperFruit;
+                        break;
                     case WAKA:
                         player = new Waka(playerImages, 8, col, row);
                         player.setSpeed(speed);
@@ -167,7 +192,6 @@ public class GameManager {
                         Ghost newGhost = new Ghost(ghost, 9, col, row);
                         newGhost.setSpeed(speed);
                         newGhost.setState(1);
-                        newGhost.setMap(mapList);
                         ghostList.add(newGhost);
                         mapList[row][col] = newGhost;
                         break;
@@ -183,15 +207,14 @@ public class GameManager {
         }
         // create a nullGhost which effectively does nothing when the map does not contain anything
         if (ghostList.isEmpty()) {
-            Ghost newGhost = new nullGhost();
+            Ghost newGhost = new nullGhost(ghost);
             newGhost.setSpeed(speed);
             newGhost.setState(1);
-            newGhost.setMap(mapList);
             ghostList.add(newGhost);
         }
         player.setSpeed(speed);
         int life = ((Long) this.config.get("lives")).intValue();
-        if (life < 0) {
+        if (life <= 0) {
             System.out.println("Error in config: lives");
             System.exit(0);
         }
@@ -279,6 +302,7 @@ public class GameManager {
         this.startTime = app.millis();
         this.modePointer = 0;
         this.ghosts.parallelStream().forEach(Ghost::resetPosition);
+        this.ghosts.parallelStream().forEach(g -> g.state = 1);
         this.fruits.parallelStream().forEach(Fruit::restore);
         this.player.resetPosition();
         this.state = INITIALIZE;
@@ -302,10 +326,10 @@ public class GameManager {
     }
 
     public void updatePlayers(PApplet app) {
-        boolean changeGhostState = updateTimer(app);
+        boolean changeGhostState = this.updateTimer(app);
         boolean killedByGhost = false;
         for (Ghost ghost : this.ghosts) {
-            if (changeGhostState){
+            if (changeGhostState && ghost.state != 2 && ghost.state != 3){
                 if (this.modePointer % 2 == 0) {
                     ghost.setState(1);
                 } else {
@@ -334,18 +358,24 @@ public class GameManager {
                 killedByGhost = true;
             }
         }
-        if (killedByGhost) {
-            this.player.kill();
-        }
-        if (this.player.getLife() == 0) {
-            this.state = LOSE;
-        }
         // refresh the cells nearby for player
         app.fill(0);
         app.rect(player.getX() - 6, player.getY() - 6, 27, 27);
         List<MapCell> nearby = findNearbyCells(player.getX(), player.getY(), this.mapCells);
         for (MapCell cell: nearby) {
             cell.draw(app);
+        }
+        if (killedByGhost) {
+            for (Ghost ghost : this.ghosts) {
+                app.fill(0);
+                app.rect(ghost.getX() - 6, ghost.getY() - 6, 28, 28);
+            }
+            this.player.kill();
+            this.ghosts.parallelStream().forEach(Ghost::resetPosition);
+            this.state = UPDATE_FRUITS;
+        }
+        if (this.player.getLife() == 0) {
+            this.state = LOSE;
         }
         boolean eat = player.tick(nearby);
         // Draw ghost first, then player to ensure player is above ghost as the video shows

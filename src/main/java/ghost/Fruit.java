@@ -4,7 +4,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Fruit extends MapCell {
-    private boolean isEaten;
+    public boolean isEaten;
 
     Fruit(PImage image, int character, int x, int y) {
         super(image, character, x, y);
