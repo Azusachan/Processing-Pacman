@@ -382,19 +382,21 @@ public class GameManager {
             }
             List<MapCell> nearby = findNearbyCells(ghost.getX(), ghost.getY(), this.mapCells);
             // clear the cells nearby for ghost
-            for (MapCell cell : nearby) {
-                if (cell.getType() == 7) {
-                    app.fill(0);
-                    app.rect(cell.getX(), cell.getY(), 16, 16);
-                    cell.draw(app);
+            if (ghost.state != 3) {
+                for (MapCell cell : nearby) {
+                    if (cell.getType() == 7) {
+                        app.fill(0);
+                        app.rect(cell.getX(), cell.getY(), 16, 16);
+                        cell.draw(app);
+                    }
                 }
-            }
-            // clear ghost
-            app.fill(0);
-            app.rect(ghost.getX() - 6, ghost.getY() - 6, 28, 28);
-            boolean killed = ghost.tick(nearby);
-            if (killed) {
-                killedByGhost = true;
+                // clear ghost
+                app.fill(0);
+                app.rect(ghost.getX() - 6, ghost.getY() - 6, 28, 28);
+                boolean killed = ghost.tick(nearby);
+                if (killed) {
+                    killedByGhost = true;
+                }
             }
         }
         // refresh the cells nearby for player

@@ -240,13 +240,7 @@ public class Ghost extends MovableCell{
         Queue<MapCellChild> queue = new LinkedList<>();
         List<MapCell> availableCells = new ArrayList<>();
         for (MapCell[] cells: map) {
-            for (MapCell cell: cells) {
-                if (cell.movable()) {
-                    // make a cell that does not move around creating random bugs
-                    cell = new MapCell(null, cell.getType(), cell.getX() / 16, cell.getY() / 16);
-                }
-                availableCells.add(cell);
-            }
+            availableCells.addAll(Arrays.asList(cells));
         }
 
         // fix issue of function when Ghost is between cells
@@ -293,6 +287,10 @@ public class Ghost extends MovableCell{
                             || (current.cell.getX()) == cell.getX() && current.cell.getY() + 16 == cell.getY()
                             || (current.cell.getX() - 16 == cell.getX() && current.cell.getY() == cell.getY())
                             || (current.cell.getX() + 16 == cell.getX() && current.cell.getY() == cell.getY())) {
+                    if (cell.getType() == 8 || cell.getType() == 9) {
+                        // make a cell that does not move around creating random bugs
+                        cell = new MapCell(null, cell.getType(), cell.getX() / 16, cell.getY() / 16);
+                    }
                     MapCellChild child = new MapCellChild(cell, current);
                     children.add(child);
                 }
