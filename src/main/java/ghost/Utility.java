@@ -25,6 +25,7 @@ public class Utility {
         return result;
     }
 
+    // only supports map that has same width as game window
     public static MapCell findClosestMovableCell(int x, int y, MapCell[][] list) {
         double minimumDistance = 9999;
         MapCell result = null;
@@ -40,8 +41,10 @@ public class Utility {
                     cells.add(cell);
                 }
             }
-            if (counter > 20) {
-                isValid = !isValid;
+            if (counter != 0 && !isValid) {
+                isValid = true;
+            } else if (counter == 0 && isValid) {
+                isValid = false;
             }
         }
         for (MapCell cell: cells) {
