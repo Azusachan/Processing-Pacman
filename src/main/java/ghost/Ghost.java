@@ -18,7 +18,7 @@ public class Ghost extends MovableCell{
     public static final int REMOVED = 3;
     public int state;
     public MapCell target;
-    private static MapCell[][] map;
+    public static MapCell[][] map;
     public MapCell player;
     private List<MapCell> route;
     public int previousState;
@@ -62,7 +62,6 @@ public class Ghost extends MovableCell{
         if (!(this.route.size() == 0 && this.routePointer == 0)) {
             // still moving
             MapCell current = this.route.get(this.routePointer);
-            // 38 = Up, 40 = Down, 37 = Left, 39 = Right
             if (current.getX() == this.x && current.getY() < this.y) {
                 this.currentDirection = 40;
                 this.y -= this.speed;
@@ -97,7 +96,7 @@ public class Ghost extends MovableCell{
             this.findPlayer();
         }
 
-        if (Math.abs(this.player.getX() - this.x) <= 1 && Math.abs(this.player.getY() - this.y) <= 1) {
+        if (Math.abs(this.player.getX() - this.x) <= 2 && Math.abs(this.player.getY() - this.y) <= 2) {
             if (this.state == FRIGHTENED || this.state == REMOVED) {
                 this.state = REMOVED;
                 this.findTarget();
@@ -221,7 +220,6 @@ public class Ghost extends MovableCell{
                             filter(cell -> !cell.cannotPassThrough()).
                             collect(Collectors.toList()));
                 }
-                availableCells.remove(null);
                 int randomPointer = (int) ((Math.random() * (availableCells.size() - 1)));
                 this.target = availableCells.get(randomPointer);
                 break;
@@ -232,7 +230,7 @@ public class Ghost extends MovableCell{
     }
 
     public void findRoute() {
-        if (this.equals(target)) {
+        if (this.equals(this.target)) {
             this.route = new ArrayList<>();
             this.route.add(this);
             this.routePointer = 0;
@@ -242,7 +240,13 @@ public class Ghost extends MovableCell{
         Queue<MapCellChild> queue = new LinkedList<>();
         List<MapCell> availableCells = new ArrayList<>();
         for (MapCell[] cells: map) {
-            availableCells.addAll(Arrays.asList(cells));
+            for (MapCell cell: cells) {
+                if (cell.movable()) {
+                    // make a cell that does not move around creating random bugs
+                    cell = new MapCell(null, cell.getType(), cell.getX() / 16, cell.getY() / 16);
+                }
+                availableCells.add(cell);
+            }
         }
 
         // fix issue of function when Ghost is between cells
@@ -289,10 +293,6 @@ public class Ghost extends MovableCell{
                             || (current.cell.getX()) == cell.getX() && current.cell.getY() + 16 == cell.getY()
                             || (current.cell.getX() - 16 == cell.getX() && current.cell.getY() == cell.getY())
                             || (current.cell.getX() + 16 == cell.getX() && current.cell.getY() == cell.getY())) {
-                    if (cell.getType() == 8 || cell.getType() == 9) {
-                        // make a cell that does not move around creating random bugs
-                        cell = new MapCell(null, cell.getType(), cell.getX() / 16, cell.getY() / 16);
-                    }
                     MapCellChild child = new MapCellChild(cell, current);
                     children.add(child);
                 }

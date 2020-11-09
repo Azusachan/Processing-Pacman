@@ -197,6 +197,34 @@ public class GameManager {
                         ghostList.add(newGhost);
                         mapList[row][col] = newGhost;
                         break;
+                    case AMBUSHER:
+                        Ghost newAmbusher = new Ambusher(ambusher, 10, col, row);
+                        newAmbusher.setSpeed(speed);
+                        newAmbusher.setState(1);
+                        ghostList.add(newAmbusher);
+                        mapList[row][col] = newAmbusher;
+                        break;
+                    case CHASER:
+                        Ghost newChaser = new Chaser(chaser, 11, col, row);
+                        newChaser.setSpeed(speed);
+                        newChaser.setState(1);
+                        ghostList.add(newChaser);
+                        mapList[row][col] = newChaser;
+                        break;
+                    case IGNORANT:
+                        Ghost newIgnorant = new Ignorant(ignorant, 12, col, row);
+                        newIgnorant.setSpeed(speed);
+                        newIgnorant.setState(1);
+                        ghostList.add(newIgnorant);
+                        mapList[row][col] = newIgnorant;
+                        break;
+                    case WHIM:
+                        Ghost newWhim = new Whim(whim, 13, col, row);
+                        newWhim.setSpeed(speed);
+                        newWhim.setState(1);
+                        ghostList.add(newWhim);
+                        mapList[row][col] = newWhim;
+                        break;
                     default:
                         System.out.println("Error in map: unknown configuration");
                         System.exit(0);
@@ -391,8 +419,18 @@ public class GameManager {
         boolean eat = player.tick(nearby);
         // Draw ghost first, then player to ensure player is above ghost as the video shows
         for (Ghost ghost : this.ghosts) {
-            if (this.debug && !killedByGhost) {
-                app.stroke(255, 255, 0);
+            this.handleDemo(app, ghost, killedByGhost);
+            ghost.draw(app);
+        }
+        this.player.draw(app);
+        if (eat) {
+            this.state = UPDATE_FRUITS;
+        }
+    }
+
+    public void handleDemo(PApplet app, Ghost ghost, boolean killedByGhost) {
+        if (this.debug && !killedByGhost) {
+            app.stroke(255, 255, 0);
 //                if (ghost.state == 1) {
 //                    switch (ghost.targetCorner) {
 //                        case 0:
@@ -412,14 +450,19 @@ public class GameManager {
 //                    app.line(ghost.getX() + 8, ghost.getY() + 8,
 //                            ghost.target.getX() + 8, ghost.target.getY() + 8);
 //                }
-                app.line(ghost.getX() + 8, ghost.getY() + 8,
-                        ghost.target.getX() + 8, ghost.target.getY() + 8);
+            app.line(ghost.getX() + 8, ghost.getY() + 8,
+                    ghost.target.getX() + 8, ghost.target.getY() + 8);
+        } else {
+            if (app.g.stroke) {
+                app.noStroke();
+                app.fill(0);
+                app.rect(0, 0, 448, 576);
+                for (MapCell[] line : this.mapCells) {
+                    for (MapCell cell : line) {
+                        cell.draw(app);
+                    }
+                }
             }
-            ghost.draw(app);
-        }
-        this.player.draw(app);
-        if (eat) {
-            this.state = UPDATE_FRUITS;
         }
     }
 

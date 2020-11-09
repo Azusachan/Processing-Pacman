@@ -27,27 +27,32 @@ public class Utility {
 
     // only supports map that has same width as game window
     public static MapCell findClosestMovableCell(int x, int y, MapCell[][] list) {
-        if (x < 0 || y < 0) {
-            return null;
+        if (x < 0) {
+            x = 0;
+        }
+        if (y < 0) {
+            y = 0;
         }
         double minimumDistance = 9999;
         MapCell result = null;
-        boolean isValid = false;
+        boolean isValidLine = false;
         List<MapCell> cells = new ArrayList<>();
         for (MapCell[] cellList: list) {
             int counter = 0;
+            boolean isValidCell = false;
             for (MapCell cell : cellList) {
                 if (cell.getType() == 1) {
                     counter++;
                 }
-                if (isValid) {
+                if (isValidLine && isValidCell) {
                     cells.add(cell);
                 }
+                if (cell.getType() == 2 || cell.getType() == 3 || cell.getType() == 4) {
+                    isValidCell = !isValidCell;
+                }
             }
-            if (counter != 0 && !isValid) {
-                isValid = true;
-            } else if (counter == 0 && isValid) {
-                isValid = false;
+            if (counter > 20) {
+                isValidLine = !isValidLine;
             }
         }
         for (MapCell cell: cells) {
