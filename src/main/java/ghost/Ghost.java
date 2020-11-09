@@ -55,6 +55,9 @@ public class Ghost extends MovableCell{
             this.findTarget();
         }
 
+        if (this.state == FRIGHTENED) {
+            this.handleFrightenMovement();
+        }
         // stop when reached target (player or wall)
         if (!(this.route.size() == 0 && this.routePointer == 0)) {
             // still moving
@@ -107,6 +110,28 @@ public class Ghost extends MovableCell{
         super.stepOn(nearbyCells);
 
         return killed;
+    }
+
+    // make sure ghost does not turn backwards and stop when frightened.
+    public void handleFrightenMovement() {
+        MapCell current = this.route.get(this.routePointer);
+        if (current.getX() == this.x && current.getY() < this.y) {
+            if (this.currentDirection == 38) {
+                this.findTarget();
+            }
+        } else if (current.getX() == this.x && current.getY() > this.y) {
+            if (this.currentDirection == 40) {
+                this.findTarget();
+            }
+        } else if (current.getX() < this.x && current.getY() == this.y) {
+            if (this.currentDirection == 39) {
+                this.findTarget();
+            }
+        } else if (current.getX() > this.x && current.getY() == this.y) {
+            if (this.currentDirection == 37) {
+                this.findTarget();
+            }
+        }
     }
 
     public void setState(int state) {
@@ -189,37 +214,14 @@ public class Ghost extends MovableCell{
             case FRIGHTENED:
                 List<MapCell> availableCells = new ArrayList<>();
 
-                switch (this.currentDirection) {
-                    // 38 = Up, 40 = Down, 37 = Left, 39 = Right
-                    case 0:
-                        for (MapCell[] cells: getMap()) {
-                            availableCells.addAll(Arrays.asList(cells).
-                                    parallelStream().
-                                    filter(cell -> !cell.cannotPassThrough()).
-                                    collect(Collectors.toList()));
-                        }
-                        break;
-                    case 38:
-                        availableCells.add(findClosestMovableCell(0, this.y, map));
-                        availableCells.add(findClosestMovableCell(this.x, 0, map));
-                        availableCells.add(findClosestMovableCell(this.x, 576, map));
-                        break;
-                    case 40:
-                        availableCells.add(findClosestMovableCell(448, this.y, map));
-                        availableCells.add(findClosestMovableCell(this.x, 0, map));
-                        availableCells.add(findClosestMovableCell(this.x, 576, map));
-                        break;
-                    case 37:
-                        availableCells.add(findClosestMovableCell(this.x, 0, map));
-                        availableCells.add(findClosestMovableCell(0, this.y, map));
-                        availableCells.add(findClosestMovableCell(448, this.y, map));
-                        break;
-                    case 39:
-                        availableCells.add(findClosestMovableCell(this.x, 576, map));
-                        availableCells.add(findClosestMovableCell(0, this.y, map));
-                        availableCells.add(findClosestMovableCell(448, this.y, map));
-                        break;
+                // choose random cell
+                for (MapCell[] cells: getMap()) {
+                    availableCells.addAll(Arrays.asList(cells).
+                            parallelStream().
+                            filter(cell -> !cell.cannotPassThrough()).
+                            collect(Collectors.toList()));
                 }
+                availableCells.remove(null);
                 int randomPointer = (int) ((Math.random() * (availableCells.size() - 1)));
                 this.target = availableCells.get(randomPointer);
                 break;

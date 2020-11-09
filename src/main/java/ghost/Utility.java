@@ -27,6 +27,9 @@ public class Utility {
 
     // only supports map that has same width as game window
     public static MapCell findClosestMovableCell(int x, int y, MapCell[][] list) {
+        if (x < 0 || y < 0) {
+            return null;
+        }
         double minimumDistance = 9999;
         MapCell result = null;
         boolean isValid = false;
@@ -52,6 +55,8 @@ public class Utility {
             if (cell.movable()) {
                 MovableCell movableCell = (MovableCell) cell;
                 distance = Math.sqrt(Math.pow(movableCell.initialX - x, 2) + Math.pow(movableCell.initialY - y, 2));
+                cell = new MapCell(null, cell.getType(),
+                        movableCell.initialX / 16, movableCell.initialY / 16);
             } else {
                 distance = Math.sqrt(Math.pow(cell.getX() - x, 2) + Math.pow(cell.getY() - y, 2));
             }
