@@ -95,7 +95,6 @@ public class Waka extends MovableCell {
         this.life = this.initialLife;
     }
 
-    // 38 = Up, 40 = Down, 37 = Left, 39 = Right
     public void turn(int keyCode) {
         this.nextDirection = keyCode;
         // turn when 180 degree

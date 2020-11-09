@@ -29,9 +29,13 @@ public class Utility {
     public static MapCell findClosestMovableCell(int x, int y, MapCell[][] list) {
         if (x < 0) {
             x = 0;
+        } else if (x > 448) {
+            x = 448;
         }
         if (y < 0) {
             y = 0;
+        } else if (y > 576) {
+            y = 576;
         }
         double minimumDistance = 9999;
         MapCell result = null;

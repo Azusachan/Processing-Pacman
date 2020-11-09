@@ -452,6 +452,10 @@ public class GameManager {
 //                }
             app.line(ghost.getX() + 8, ghost.getY() + 8,
                     ghost.target.getX() + 8, ghost.target.getY() + 8);
+            if (ghost.getType() == 13) {
+                Whim whim = (Whim) ghost;
+                app.line(whim.getX() + 8, whim.getY() + 8, whim.vectorX, whim.vectorY);
+            }
         } else {
             if (app.g.stroke) {
                 app.noStroke();

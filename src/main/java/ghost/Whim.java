@@ -11,6 +11,8 @@ import static ghost.Utility.findClosestMovableCell;
 
 public class Whim extends Ghost{
     Ghost chaser;
+    public int vectorX;
+    public int vectorY;
     Whim(PImage[] images, int character, int x, int y) {
         super(images, character, x, y);
         this.chaser = null;
@@ -35,27 +37,29 @@ public class Whim extends Ghost{
                     int vectorY;
                     switch (player.currentDirection) {
                         case 38:
-                            vectorX = Math.abs(player.getX() - this.chaser.x);
-                            vectorY = Math.abs(player.getY() + 16 - this.chaser.y);
+                            vectorX = (player.getX() - this.chaser.x) * 2 + this.chaser.x;
+                            vectorY = (player.getY() - 16 - this.chaser.y) * 2 + this.chaser.y;
                             break;
                         case 40:
-                            vectorX = Math.abs(player.getX() - this.chaser.x);
-                            vectorY = Math.abs(player.getY() - 16 - this.chaser.y);
+                            vectorX = (player.getX() - this.chaser.x) * 2 + this.chaser.x;
+                            vectorY = (player.getY() + 16 - this.chaser.y) * 2 + this.chaser.y;
                             break;
                         case 37:
-                            vectorX = Math.abs(player.getX() - 16 - this.chaser.x);
-                            vectorY = Math.abs(player.getY() - this.chaser.y);
+                            vectorX = (player.getX() - 16 - this.chaser.x) * 2 + this.chaser.x;
+                            vectorY = (player.getY() - this.chaser.y) * 2 + this.chaser.y;
                             break;
                         case 39:
-                            vectorX = Math.abs(player.getX() + 16 - this.chaser.x);
-                            vectorY = Math.abs(player.getY() - this.chaser.y);
+                            vectorX = (player.getX() + 16 - this.chaser.x) * 2 + this.chaser.x;
+                            vectorY = (player.getY() - this.chaser.y) * 2 + this.chaser.y;
                             break;
                         default:
-                            vectorX = Math.abs(player.getX() - this.chaser.x);
-                            vectorY = Math.abs(player.getY() - this.chaser.y);
+                            vectorX = (player.getX() - this.chaser.x) * 2 + this.chaser.x;
+                            vectorY = (player.getY() - this.chaser.y) * 2 + this.chaser.y;
                             break;
                     }
                     this.target = findClosestMovableCell(vectorX, vectorY, map);
+                    this.vectorX = vectorX;
+                    this.vectorY = vectorY;
                 }
                 break;
             case SCATTER:
@@ -82,7 +86,7 @@ public class Whim extends Ghost{
     }
 
     public void findChaser() {
-        if (this.player == null) {
+        if (this.chaser == null) {
             for (MapCell[] cells : map) {
                 for (MapCell cell : cells) {
                     if (cell.getType() == 11) {
@@ -91,5 +95,13 @@ public class Whim extends Ghost{
                 }
             }
         }
+    }
+
+    @Override
+    public void resetPosition() {
+        super.resetPosition();
+        this.chaser = null;
+        this.vectorX = 0;
+        this.vectorY = 0;
     }
 }
