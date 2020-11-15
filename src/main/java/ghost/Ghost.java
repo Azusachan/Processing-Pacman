@@ -16,17 +16,17 @@ public class Ghost extends MovableCell{
     public static final int REMOVED = 3;
     public static final int FRIGHTENED_AND_INVISIBLE = 4;
 
-    private final PImage ghostImage;
-    private final PImage frightened;
+    public final PImage ghostImage;
+    public final PImage frightened;
     public int state;
     public MapCell target;
     public static MapCell[][] map;
     public MapCell player;
-    private List<MapCell> route;
+    public List<MapCell> route;
     public int previousState;
-    private static int frightenedDuration;
-    private int routePointer;
-    private int frightenedTimer;
+    public static int frightenedDuration;
+    public int routePointer;
+    public int frightenedTimer;
     public int targetCorner;
 
     Ghost(PImage[] images, int character, int x, int y) {
@@ -274,12 +274,13 @@ public class Ghost extends MovableCell{
                     this.routePointer = 0;
                     return;
             } else {
-                List<MapCell> nearbyCells = findAvailableNearbyCells(current.cell.getX(), current.cell.getY(), availableCells);
-                List<MapCellChild> children = getChildren(current, nearbyCells);
+                List<MapCellChild> children = getChildren(current, availableCells);
                 queue.addAll(children);
             }
             availableCells.remove(current.cell);
         }
+        System.out.println("Error: Find path failed!");
+        System.exit(1);
     }
 
     public static List<MapCell> trace(MapCellChild target) {
@@ -304,7 +305,7 @@ public class Ghost extends MovableCell{
                             || (current.cell.getX()) == cell.getX() && current.cell.getY() + 16 == cell.getY()
                             || (current.cell.getX() - 16 == cell.getX() && current.cell.getY() == cell.getY())
                             || (current.cell.getX() + 16 == cell.getX() && current.cell.getY() == cell.getY())) {
-                    if (cell.getType() == 8 || cell.getType() == 9) {
+                    if (cell.getType() >= 8) {
                         // make a cell that does not move around creating random bugs
                         cell = new MapCell(null, cell.getType(), cell.getX() / 16, cell.getY() / 16);
                     }
@@ -313,17 +314,6 @@ public class Ghost extends MovableCell{
                 }
             }
         return children;
-    }
-
-    public static List<MapCell> findAvailableNearbyCells(int x, int y, List<MapCell> availableCells) {
-        List<MapCell> result = new ArrayList<>();
-        for (MapCell cell: availableCells) {
-            // find 3x3 squares nearby
-            if (Math.abs(cell.getX() - (x + 8)) <= 24 && Math.abs(cell.getY() - (y + 8)) <= 24) {
-                result.add(cell);
-            }
-        }
-        return result;
     }
 
     private static class MapCellChild{

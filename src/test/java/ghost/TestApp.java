@@ -2,18 +2,18 @@ package ghost;
 
 import processing.core.PApplet;
 
-public class App extends PApplet {
+public class TestApp extends PApplet {
     public GameManager currentGame;
     public static final int WIDTH = 448;
     public static final int HEIGHT = 576;
+    public boolean isDraw;
 
-    public App() {
-        currentGame = new GameManager("config.json");
+    public TestApp(GameManager currentGame) {
+        this.currentGame = currentGame;
+        this.isDraw = false;
     }
 
     public void setup(){
-        frameRate(60);
-        background(0, 0, 0);
         size(WIDTH, HEIGHT);
         this.currentGame.setup(this);
     }
@@ -23,6 +23,12 @@ public class App extends PApplet {
     }
 
     public void draw() {
+        if (isDraw) {
+            this.currentGame.draw(this);
+        }
+    }
+
+    public void testDraw() {
         this.currentGame.draw(this);
     }
 
@@ -30,7 +36,4 @@ public class App extends PApplet {
         this.currentGame.keyPressed(keyCode);
     }
 
-    public static void main(String[] args) {
-        PApplet.main("ghost.App");
-    }
 }

@@ -54,12 +54,12 @@ public class GameManager {
     public int modePointer;
     public List<Integer> modeLengths;
 
-    public GameManager() {
+    public GameManager(String configLocation) {
         //Set up your objects
         JSONParser parser = new JSONParser();
         JSONObject configObject = null;
         try {
-            File config = new File("config.json");
+            File config = new File(configLocation);
             FileReader reader = new FileReader(config);
             configObject = (JSONObject) parser.parse(reader);
         } catch (IOException e) {
