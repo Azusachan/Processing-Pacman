@@ -58,8 +58,8 @@ public class Whim extends Ghost{
                             break;
                     }
                     this.target = findClosestMovableCell(vectorX, vectorY, map);
-                    this.vectorX = vectorX;
-                    this.vectorY = vectorY;
+                    this.vectorX = vectorX + 8;
+                    this.vectorY = vectorY + 8;
                 }
                 break;
             case SCATTER:

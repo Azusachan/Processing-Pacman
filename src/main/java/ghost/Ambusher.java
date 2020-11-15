@@ -10,7 +10,8 @@ import java.util.stream.Collectors;
 import static ghost.Utility.findClosestMovableCell;
 
 public class Ambusher extends Ghost {
-
+    public int vectorX;
+    public int vectorY;
     Ambusher(PImage[] images, int character, int x, int y) {
         super(images, character, x, y);
     }
@@ -29,15 +30,23 @@ public class Ambusher extends Ghost {
                         break;
                     case 38:
                         this.target = findClosestMovableCell(player.getX(), player.getY() - 64, map);
+                        this.vectorX = player.getX() + 8;
+                        this.vectorY = player.getY() - 56;
                         break;
                     case 40:
                         this.target = findClosestMovableCell(player.getX(), player.getY() + 64, map);
+                        this.vectorX = player.getX() + 8;
+                        this.vectorY = player.getY() + 72;
                         break;
                     case 37:
                         this.target = findClosestMovableCell(player.getX() - 64, player.getY(), map);
+                        this.vectorX = player.getX() - 56;
+                        this.vectorY = player.getY() + 8;
                         break;
                     case 39:
                         this.target = findClosestMovableCell(player.getX() + 64, player.getY(), map);
+                        this.vectorX = player.getX() + 72;
+                        this.vectorY = player.getY() + 8;
                         break;
                 }
                 break;

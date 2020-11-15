@@ -38,6 +38,9 @@ public class GameManager {
     private static final int WIN = 3;
     private static final int LOSE = 4;
     private static final int RESET = 5;
+    private static final int DEBUG_OFF = 0;
+    private static final int DEBUG_ON = 1;
+    private static final int DEBUG_REALISTIC = 2;
 
     public MapCell[][] mapCells;
     public List<Ghost> ghosts;
@@ -45,7 +48,7 @@ public class GameManager {
     private final JSONObject config;
     public Waka player;
 
-    private boolean debug;
+    private int debug;
     private int state;
     private int startTime;
     public int modePointer;
@@ -71,7 +74,7 @@ public class GameManager {
             System.exit(0);
         }
         this.config = configObject;
-        this.debug = false;
+        this.debug = DEBUG_OFF;
     }
 
     public void setup(PApplet app) {
@@ -245,7 +248,7 @@ public class GameManager {
         }
         // create a nullGhost which effectively does nothing when the map does not contain anything
         if (ghostList.isEmpty()) {
-            Ghost newGhost = new nullGhost(ghost);
+            Ghost newGhost = new NullGhost(ghost);
             newGhost.setSpeed(speed);
             newGhost.setState(1);
             ghostList.add(newGhost);
@@ -364,7 +367,7 @@ public class GameManager {
     }
 
     public void updatePlayers(PApplet app) {
-        if (this.debug) {
+        if (this.debug != DEBUG_OFF) {
             app.fill(0);
             app.rect(0, 0, 448, 576);
             for (MapCell[] line : this.mapCells) {
@@ -437,7 +440,7 @@ public class GameManager {
         boolean eat = player.tick(nearby);
         // Draw ghost first, then player to ensure player is above ghost as the video shows
         for (Ghost ghost : this.ghosts) {
-            this.handleDemo(app, ghost, killedByGhost);
+            this.handleDebug(app, ghost, killedByGhost);
             ghost.draw(app);
         }
         this.player.draw(app);
@@ -446,51 +449,81 @@ public class GameManager {
         }
     }
 
-    public void handleDemo(PApplet app, Ghost ghost, boolean killedByGhost) {
-        if (this.debug && !killedByGhost) {
+    public void handleDebug(PApplet app, Ghost ghost, boolean killedByGhost) {
+        if (this.debug != DEBUG_OFF && !killedByGhost) {
             app.stroke(255, 255, 0);
-//                if (ghost.state == 1) {
-//                    switch (ghost.targetCorner) {
-//                        case 0:
-//                            app.line(ghost.getX() + 8, ghost.getY() + 8, 0, 0);
-//                            break;
-//                        case 1:
-//                            app.line(ghost.getX() + 8, ghost.getY() + 8, 448, 0);
-//                            break;
-//                        case 2:
-//                            app.line(ghost.getX() + 8, ghost.getY() + 8, 0, 576);
-//                            break;
-//                        case 3:
-//                            app.line(ghost.getX() + 8, ghost.getY() + 8, 448, 576);
-//                            break;
-//                    }
-//                } else {
-//                    app.line(ghost.getX() + 8, ghost.getY() + 8,
-//                            ghost.target.getX() + 8, ghost.target.getY() + 8);
-//                }
-            app.line(ghost.getX() + 8, ghost.getY() + 8,
-                    ghost.target.getX() + 8, ghost.target.getY() + 8);
-            if (ghost.getType() == 13) {
-                Whim whim = (Whim) ghost;
-                app.line(whim.getX() + 8, whim.getY() + 8, whim.vectorX, whim.vectorY);
-            }
-        } else {
-            if (app.g.stroke) {
-                app.noStroke();
-                app.fill(0);
-                app.rect(0, 0, 448, 576);
-                for (MapCell[] line : this.mapCells) {
-                    for (MapCell cell : line) {
-                        cell.draw(app);
+            if (this.debug == DEBUG_ON) {
+                if (ghost.state == 1) {
+                    switch (ghost.targetCorner) {
+                        case 0:
+                            app.line(ghost.getX() + 8, ghost.getY() + 8, 0, 0);
+                            break;
+                        case 1:
+                            app.line(ghost.getX() + 8, ghost.getY() + 8, 448, 0);
+                            break;
+                        case 2:
+                            app.line(ghost.getX() + 8, ghost.getY() + 8, 0, 576);
+                            break;
+                        case 3:
+                            app.line(ghost.getX() + 8, ghost.getY() + 8, 448, 576);
+                            break;
                     }
+                } else {
+                        switch (ghost.getType()) {
+                            case 16: // NullGhost
+                                break;
+                            case 9: // Ghost
+                            case 11: // Chaser
+                                app.line(ghost.getX() + 8, ghost.getY() + 8,
+                                        ghost.target.getX() + 8, ghost.target.getY() + 8);
+                                break;
+                            case 10: // Ambusher
+                                Ambusher ambusher = (Ambusher) ghost;
+                                app.line(ambusher.getX() + 8, ambusher.getY() + 8,
+                                        ambusher.vectorX, ambusher.vectorY);
+                                break;
+                            case 12: // Ignorant
+                                Ignorant ignorant = (Ignorant) ghost;
+                                app.line(ignorant.getX() + 8, ignorant.getY() + 8,
+                                        ignorant.vectorX, ignorant.vectorY);
+                                break;
+                            case 13: // Whim
+                                Whim whim = (Whim) ghost;
+                                app.line(whim.getX() + 8, whim.getY() + 8,
+                                        whim.vectorX, whim.vectorY);
+                                break;
+                        }
                 }
+                app.noStroke();
+            } else if (this.debug == DEBUG_REALISTIC){
+                app.line(ghost.getX() + 8, ghost.getY() + 8,
+                        ghost.target.getX() + 8, ghost.target.getY() + 8);
             }
         }
     }
 
     public void keyPressed(int keyCode) {
-        if (keyCode == 32) {
-            this.debug = !this.debug;
+        if (keyCode == 32) { // press space
+            switch (this.debug) {
+                case DEBUG_OFF:
+                    this.debug = DEBUG_ON;
+                    break;
+                case DEBUG_ON:
+                case DEBUG_REALISTIC:
+                    this.debug = DEBUG_OFF;
+                    this.state = INITIALIZE;
+                    break;
+            }
+        } else if (keyCode == 82) { // press r
+            switch (this.debug) {
+                case DEBUG_OFF:
+                case DEBUG_ON:
+                    this.debug = DEBUG_REALISTIC;
+                    break;
+                case DEBUG_REALISTIC:
+                    this.debug = DEBUG_ON;
+                    break;
+            }
         } else {
             player.turn(keyCode);
         }

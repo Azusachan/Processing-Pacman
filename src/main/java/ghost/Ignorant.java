@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import static ghost.Utility.findClosestMovableCell;
 
 public class Ignorant extends Ghost{
+    public int vectorX;
+    public int vectorY;
     Ignorant(PImage[] images, int character, int x, int y) {
         super(images, character, x, y);
     }
@@ -27,6 +29,8 @@ public class Ignorant extends Ghost{
                     this.target = findClosestMovableCell(0, 576, map);
                 } else {
                     this.target = this.player;
+                    this.vectorX = this.player.getX() + 8;
+                    this.vectorY = this.player.getY() + 8;
                 }
                 break;
             case SCATTER:
