@@ -28,10 +28,6 @@ public class TestApp extends PApplet {
         }
     }
 
-    public void testDraw() {
-        this.currentGame.draw(this);
-    }
-
     public void keyPressed(){
         this.currentGame.keyPressed(keyCode);
     }

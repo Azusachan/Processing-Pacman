@@ -25,7 +25,7 @@ public class Chaser extends Ghost{
                 break;
             case SCATTER:
                 this.target = findClosestMovableCell(0, 0, map);
-                this.targetCorner = 1;
+                this.targetCorner = 0;
                 break;
             case FRIGHTENED:
                 List<MapCell> availableCells = new ArrayList<>();
