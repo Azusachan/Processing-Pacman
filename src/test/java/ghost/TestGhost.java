@@ -88,6 +88,39 @@ public class TestGhost {
 
         for (Ghost ghost: testGhostGame.ghosts) {
             ghost.draw(testGhostGameApp);
+            switch (ghost.type) {
+                case 13:
+                    Whim whim = (Whim) ghost;
+                    whim.findChaser();
+                    assertNotNull(whim.chaser);
+                    assertNotNull(whim.route);
+                    assertEquals(whim.currentDirection, 37);
+                    assertEquals(whim.targetCorner, 3);
+                    break;
+                case 12:
+                    Ignorant ignorant = (Ignorant) ghost;
+                    assertNotNull(ignorant.route);
+                    assertEquals(ignorant.currentDirection, 37);
+                    assertEquals(ignorant.targetCorner, 2);
+                    break;
+                case 11:
+                    Chaser chaser = (Chaser) ghost;
+                    assertNotNull(chaser.route);
+                    assertEquals(chaser.currentDirection, 37);
+                    assertEquals(chaser.targetCorner, 0);
+                case 10:
+                    Ambusher ambusher = (Ambusher) ghost;
+                    assertNotNull(ambusher.route);
+                    assertEquals(ambusher.currentDirection, 37);
+                    assertEquals(ambusher.targetCorner, 1);
+                case 9:
+
+
+
+            }
+            assertNotNull(ghost.target);
+            assertNotNull(ghost.route);
+            assertNotNull(ghost.player);
         }
     }
 }

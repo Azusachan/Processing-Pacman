@@ -84,7 +84,7 @@ public class Ghost extends MovableCell{
                 // happens when ghost is between cells and refresh route list
                 this.route.add(0, this.stepOnCell);
                 this.routePointer = 0;
-            } else if (current.equals(this)) {
+            } else if (this.equals(current)) {
                 if (!this.equals(this.target)) {
                     if (this.routePointer == this.route.size() - 1) {
                         this.findTarget();
@@ -102,7 +102,7 @@ public class Ghost extends MovableCell{
             this.findPlayer();
         }
 
-        if (Math.abs(this.player.getX() - this.x) <= 2 && Math.abs(this.player.getY() - this.y) <= 2) {
+        if (Math.abs(this.player.getX() - this.x) <= 16 && Math.abs(this.player.getY() - this.y) <= 16) {
             if (this.state == FRIGHTENED || this.state == REMOVED) {
                 this.state = REMOVED;
                 this.findTarget();
@@ -156,7 +156,7 @@ public class Ghost extends MovableCell{
     }
 
     public static void setFrightenedDuration(int duration) {
-        frightenedDuration = duration;
+        Ghost.frightenedDuration = duration;
     }
 
     public void frighten(){
@@ -279,8 +279,6 @@ public class Ghost extends MovableCell{
             }
             availableCells.remove(current.cell);
         }
-        System.out.println("Error: Find path failed!");
-        System.exit(1);
     }
 
     public static List<MapCell> trace(MapCellChild target) {
@@ -300,15 +298,15 @@ public class Ghost extends MovableCell{
                 if (cell.cannotPassThrough()) {
                     continue;
                 }
-
+                if (cell.movable()) {
+                    // make a cell from its initial position
+                    MovableCell movableCell = (MovableCell) cell;
+                    cell = new MapCell(null, cell.getType(), movableCell.initialX / 16, movableCell.initialY / 16);
+                }
                 if (((current.cell.getX()) == cell.getX() && current.cell.getY() - 16 == cell.getY())
                             || (current.cell.getX()) == cell.getX() && current.cell.getY() + 16 == cell.getY()
                             || (current.cell.getX() - 16 == cell.getX() && current.cell.getY() == cell.getY())
                             || (current.cell.getX() + 16 == cell.getX() && current.cell.getY() == cell.getY())) {
-                    if (cell.getType() >= 8) {
-                        // make a cell that does not move around creating random bugs
-                        cell = new MapCell(null, cell.getType(), cell.getX() / 16, cell.getY() / 16);
-                    }
                     MapCellChild child = new MapCellChild(cell, current);
                     children.add(child);
                 }
@@ -333,7 +331,8 @@ public class Ghost extends MovableCell{
             this.state = this.previousState;
         }
         this.target = null;
-        this.route = null;
+        this.route.clear();
         this.routePointer = 0;
+        this.findTarget();
     }
 }

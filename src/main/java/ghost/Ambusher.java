@@ -52,7 +52,7 @@ public class Ambusher extends Ghost {
                 break;
             case SCATTER:
                 this.target = findClosestMovableCell(448, 0, map);
-                this.targetCorner = 0;
+                this.targetCorner = 1;
                 break;
             case FRIGHTENED:
                 List<MapCell> availableCells = new ArrayList<>();

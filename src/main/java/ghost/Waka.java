@@ -32,12 +32,12 @@ public class Waka extends MovableCell {
         }
         MapCell m = (MapCell) o;
         boolean result = false;
-        if (this.stepOnCell != null) {
-            if (this.stepOnCell.getX() == m.getX() && this.stepOnCell.getY() == m.getY()) {
+        if (this.nextCell != null) {
+            if (this.nextCell.getX() == m.getX() && this.nextCell.getY() == m.getY()) {
                 result = true;
             }
-        } else {
-            if (super.equals(m)) {
+        } else if (this.stepOnCell != null) {
+            if (this.stepOnCell.getX() == m.getX() && this.stepOnCell.getY() == m.getY()) {
                 result = true;
             }
         }
