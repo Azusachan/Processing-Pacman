@@ -102,7 +102,7 @@ public class Ghost extends MovableCell{
             this.findPlayer();
         }
 
-        if (Math.abs(this.player.getX() - this.x) <= 16 && Math.abs(this.player.getY() - this.y) <= 16) {
+        if (Math.abs(this.player.getX() - this.x) <= 2 && Math.abs(this.player.getY() - this.y) <= 2) {
             if (this.state == FRIGHTENED || this.state == REMOVED) {
                 this.state = REMOVED;
                 this.findTarget();

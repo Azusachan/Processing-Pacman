@@ -81,7 +81,8 @@ public class MovableCell extends MapCell{
     public MapCell stepOn(List<MapCell> nearbyCells) {
         MapCell stepOn = null;
         for (MapCell cell : nearbyCells) {
-            if (cell.getX() == this.x && cell.getY() == this.y && (cell.getType() == 0 || cell.getType() == 7)) {
+            if (cell.getX() == this.x && cell.getY() == this.y &&
+                    (cell.getType() == 0 || cell.getType() == 7 || cell.getType() == 15)) {
                 stepOn = cell;
             } else if (cell.movable()) {
                 MovableCell movableCell = (MovableCell) cell;
