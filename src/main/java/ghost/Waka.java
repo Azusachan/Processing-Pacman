@@ -111,7 +111,7 @@ public class Waka extends MovableCell {
         boolean edible = false;
         for (MapCell cell : nearbyCells) {
             if (this.getX() == cell.getX() && this.getY() == cell.getY()) {
-                if (cell.getType() == 7 || cell.getType() == 14) { //fruit
+                if (cell.getType() == 7 || cell.getType() == 14 || cell.getType() == 15) { //fruit
                     Fruit fruit = (Fruit) cell;
                     if (!fruit.isEaten()) {
                         fruit.eaten();

@@ -10,12 +10,14 @@ import static ghost.Utility.findClosestMovableCell;
 
 
 public class Ghost extends MovableCell{
-    private final PImage ghostImage;
-    private final PImage frightened;
     public static final int CHASE = 0;
     public static final int SCATTER = 1;
     public static final int FRIGHTENED = 2;
     public static final int REMOVED = 3;
+    public static final int FRIGHTENED_AND_INVISIBLE = 4;
+
+    private final PImage ghostImage;
+    private final PImage frightened;
     public int state;
     public MapCell target;
     public static MapCell[][] map;
@@ -44,6 +46,10 @@ public class Ghost extends MovableCell{
         this.handleFrighten(app);
         if (this.state == FRIGHTENED) {
             app.image(this.frightened, this.x - 6, this.y - 6);
+        } else if (this.state == FRIGHTENED_AND_INVISIBLE) {
+            app.tint(255, 126);
+            app.image(this.ghostImage, this.x - 6, this.y - 6);
+            app.noTint();
         } else if (this.state != REMOVED) {
             app.image(this.ghostImage, this.x - 6, this.y - 6);
         }
@@ -55,7 +61,7 @@ public class Ghost extends MovableCell{
             this.findTarget();
         }
 
-        if (this.state == FRIGHTENED) {
+        if (this.state == FRIGHTENED || this.state == FRIGHTENED_AND_INVISIBLE) {
             this.handleFrightenMovement();
         }
         // stop when reached target (player or wall)
@@ -85,7 +91,7 @@ public class Ghost extends MovableCell{
                     } else {
                         this.routePointer++;
                     }
-                } else if (this.state == FRIGHTENED) {
+                } else if (this.state == FRIGHTENED || this.state == FRIGHTENED_AND_INVISIBLE) {
                     this.findTarget();
                 }
             }
@@ -137,6 +143,10 @@ public class Ghost extends MovableCell{
         this.state = state;
     }
 
+    public void setPreviousState(int state) {
+        this.previousState = state;
+    }
+
     public static void setMap(MapCell[][] map) {
         Ghost.map = map;
     }
@@ -155,15 +165,21 @@ public class Ghost extends MovableCell{
         this.findTarget();
     }
 
+    public void frightenAndInvisible(){
+        this.previousState = this.state;
+        this.state = FRIGHTENED_AND_INVISIBLE;
+        this.findTarget();
+    }
+
     public void handleFrighten(PApplet app) {
-        if (this.state == FRIGHTENED && this.frightenedTimer == 0) {
+        if ((this.state == FRIGHTENED || this.state == FRIGHTENED_AND_INVISIBLE) && this.frightenedTimer == 0) {
             this.frightenedTimer = app.millis();
-        } else if (this.state == FRIGHTENED) {
+        } else if (this.state == FRIGHTENED || this.state == FRIGHTENED_AND_INVISIBLE) {
             int delta = app.millis() - this.frightenedTimer;
             delta = delta / 1000;
             if (delta >= frightenedDuration) {
                 this.frightenedTimer = 0;
-                this.state = previousState;
+                this.state = this.previousState;
             }
         }
     }
@@ -211,6 +227,7 @@ public class Ghost extends MovableCell{
                 }
                 break;
             case FRIGHTENED:
+            case FRIGHTENED_AND_INVISIBLE:
                 List<MapCell> availableCells = new ArrayList<>();
 
                 // choose random cell
@@ -322,8 +339,8 @@ public class Ghost extends MovableCell{
     @Override
     public void resetPosition() {
         super.resetPosition();
-        if (this.state == REMOVED) {
-            this.state = previousState;
+        if (this.state == REMOVED || this.state == FRIGHTENED_AND_INVISIBLE) {
+            this.state = this.previousState;
         }
         this.target = null;
         this.route = null;

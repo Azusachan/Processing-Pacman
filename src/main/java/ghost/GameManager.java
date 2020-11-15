@@ -15,6 +15,7 @@ import java.util.List;
 import static ghost.Utility.findNearbyCells;
 
 public class GameManager {
+    // Perhaps using enum is better here
     private static final String EMPTY = "0";
     private static final String HORIZONTAL = "1";
     private static final String VERTICAL = "2";
@@ -24,6 +25,7 @@ public class GameManager {
     private static final String DOWN_RIGHT = "6";
     private static final String FRUIT = "7";
     public static final String SUPER_FRUIT = "8";
+    public static final String SODA = "9";
     private static final String WAKA = "p";
     private static final String GHOST = "g";
     private static final String AMBUSHER = "a";
@@ -90,6 +92,7 @@ public class GameManager {
         PImage downRight = app.loadImage("src/main/resources/downRight.png");
         PImage fruit = app.loadImage("src/main/resources/fruit.png");
         PImage superFruit = app.loadImage("src/main/resources/superFruit.png");
+        PImage soda = app.loadImage("src/main/resources/soda.png");
 
         PImage[] playerImages = new PImage[5];
         //[left, right, up, down, closed]
@@ -184,6 +187,11 @@ public class GameManager {
                         SuperFruit newSuperFruit = new SuperFruit(superFruit, 14, col, row);
                         fruitList.add(newSuperFruit);
                         mapList[row][col] = newSuperFruit;
+                        break;
+                    case SODA:
+                        Soda newSoda = new Soda(soda, 15, col, row);
+                        fruitList.add(newSoda);
+                        mapList[row][col] = newSoda;
                         break;
                     case WAKA:
                         player = new Waka(playerImages, 8, col, row);
@@ -368,13 +376,21 @@ public class GameManager {
         boolean changeGhostState = this.updateTimer(app);
         boolean killedByGhost = false;
         for (Ghost ghost : this.ghosts) {
-            if (changeGhostState && ghost.state != 2 && ghost.state != 3){
-                if (this.modePointer % 2 == 0) {
-                    ghost.setState(1);
+            if (changeGhostState){
+                if (ghost.state < 2) {
+                    if (this.modePointer % 2 == 0) {
+                        ghost.setState(1);
+                    } else {
+                        ghost.setState(0);
+                    }
+                    ghost.findTarget();
                 } else {
-                    ghost.setState(0);
+                    if (this.modePointer % 2 == 0) {
+                        ghost.setPreviousState(1);
+                    } else {
+                        ghost.setPreviousState(0);
+                    }
                 }
-                ghost.findTarget();
             }
             //update player every 16 frames
             if (ghost.state == 0 && app.frameCount%16 == 0) {

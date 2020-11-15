@@ -5,7 +5,7 @@ import processing.core.PImage;
 import java.util.List;
 
 public class SuperFruit extends Fruit{
-    private static List<Ghost> ghosts;
+    public static List<Ghost> ghosts;
     SuperFruit(PImage image, int character, int x, int y) {
         super(image, character, x, y);
     }
@@ -16,7 +16,7 @@ public class SuperFruit extends Fruit{
 
     @Override
     public void eaten(){
-        super.eaten();
+        this.isEaten = true;
         ghosts.parallelStream().forEach(Ghost::frighten);
     }
 }
