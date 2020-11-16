@@ -82,20 +82,18 @@ public class TestGhost {
 
     @Test
     public void testDrawAndTick() {
-        GameManager testGhostGame = new GameManager("src/test/resources/test_ghost.json");
+        GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_chase.json");
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
-
+        testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
+        testGhostGame.draw(testGhostGameApp);
         for (Ghost ghost: testGhostGame.ghosts) {
-            ghost.draw(testGhostGameApp);
             switch (ghost.type) {
                 case 13:
                     Whim whim = (Whim) ghost;
-                    whim.findChaser();
-                    assertNotNull(whim.chaser);
-                    assertEquals(37, whim.currentDirection);
+                    assertEquals(40, whim.currentDirection);
                     assertEquals(3, whim.targetCorner);
                     break;
                 case 12:
@@ -110,12 +108,12 @@ public class TestGhost {
                     break;
                 case 10:
                     Ambusher ambusher = (Ambusher) ghost;
-                    assertEquals(37, ambusher.currentDirection);
+                    assertEquals(39, ambusher.currentDirection);
                     assertEquals(1, ambusher.targetCorner);
                     break;
                 case 9:
-                    assertEquals(3, ghost.targetCorner);
-                    assertEquals(37, ghost.currentDirection);
+                    assertEquals(0, ghost.targetCorner);
+                    assertEquals(38, ghost.currentDirection);
                     break;
             }
             assertNotNull(ghost.target);
@@ -133,14 +131,14 @@ public class TestGhost {
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
+        testGhostGame.draw(testGhostGameApp);
         for (Ghost ghost: testGhostGame.ghosts) {
-            ghost.draw(testGhostGameApp);
             switch (ghost.type) {
                 case 13:
                     Whim whim = (Whim) ghost;
                     whim.findChaser();
                     assertNotNull(whim.chaser);
-                    assertEquals(39, whim.currentDirection);
+                    assertEquals(40, whim.currentDirection);
                     break;
                 case 12:
                     Ignorant ignorant = (Ignorant) ghost;
@@ -157,9 +155,10 @@ public class TestGhost {
                     break;
                 case 9:
                     assertEquals(0, ghost.targetCorner);
-                    assertEquals(40, ghost.currentDirection);
+                    assertEquals(38, ghost.currentDirection);
                     break;
             }
+            // Test can ghost find player if chase and player is null
             ghost.player = null;
             ghost.setState(Ghost.CHASE);
             ghost.findTarget();
@@ -177,10 +176,10 @@ public class TestGhost {
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
 
         testGhostGame.initMap(testGhostGameApp);
+        testGhostGame.draw(testGhostGameApp);
         for (Ghost ghost: testGhostGame.ghosts) {
             MovableCell player = (MovableCell) ghost.player;
             player.currentDirection = 38;
-            ghost.draw(testGhostGameApp);
             switch (ghost.type) {
                 case 13:
                     Whim whim = (Whim) ghost;
@@ -195,7 +194,7 @@ public class TestGhost {
                     break;
                 case 11:
                     Chaser chaser = (Chaser) ghost;
-                    assertEquals(40, chaser.currentDirection);
+                    assertEquals(38, chaser.currentDirection);
                     break;
                 case 10:
                     Ambusher ambusher = (Ambusher) ghost;
@@ -203,7 +202,7 @@ public class TestGhost {
                     assertEquals(39, ambusher.currentDirection);
                     break;
                 case 9:
-                    assertEquals(40, ghost.currentDirection);
+                    assertEquals(38, ghost.currentDirection);
                     break;
             }
         }
@@ -217,11 +216,10 @@ public class TestGhost {
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
+        testGhostGame.draw(testGhostGameApp);
         for (Ghost ghost: testGhostGame.ghosts) {
-
             MovableCell player = (MovableCell) ghost.player;
             player.currentDirection = 40;
-            ghost.draw(testGhostGameApp);
             switch (ghost.type) {
                 case 13:
                     Whim whim = (Whim) ghost;
@@ -237,7 +235,7 @@ public class TestGhost {
                 case 11:
                     Chaser chaser = (Chaser) ghost;
                     chaser.findTarget();
-                    assertEquals(40, chaser.currentDirection);
+                    assertEquals(38, chaser.currentDirection);
                     break;
                 case 10:
                     Ambusher ambusher = (Ambusher) ghost;
@@ -246,7 +244,7 @@ public class TestGhost {
                     break;
                 case 9:
                     ghost.findTarget();
-                    assertEquals(40, ghost.currentDirection);
+                    assertEquals(38, ghost.currentDirection);
                     break;
             }
         }
@@ -260,11 +258,10 @@ public class TestGhost {
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
-
+        testGhostGame.draw(testGhostGameApp);
         for (Ghost ghost: testGhostGame.ghosts) {
             MovableCell player = (MovableCell) ghost.player;
             player.currentDirection = 37;
-            ghost.draw(testGhostGameApp);
             switch (ghost.type) {
                 case 13:
                     Whim whim = (Whim) ghost;
@@ -280,7 +277,7 @@ public class TestGhost {
                 case 11:
                     Chaser chaser = (Chaser) ghost;
                     chaser.findTarget();
-                    assertEquals(40, chaser.currentDirection);
+                    assertEquals(38, chaser.currentDirection);
                     break;
                 case 10:
                     Ambusher ambusher = (Ambusher) ghost;
@@ -289,7 +286,7 @@ public class TestGhost {
                     break;
                 case 9:
                     ghost.findTarget();
-                    assertEquals(40, ghost.currentDirection);
+                    assertEquals(38, ghost.currentDirection);
                     break;
             }
         }
@@ -304,11 +301,10 @@ public class TestGhost {
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
-
+        testGhostGame.draw(testGhostGameApp);
         for (Ghost ghost: testGhostGame.ghosts) {
             MovableCell player = (MovableCell) ghost.player;
             player.currentDirection = 39;
-            ghost.draw(testGhostGameApp);
             switch (ghost.type) {
                 case 13:
                     Whim whim = (Whim) ghost;
@@ -324,7 +320,7 @@ public class TestGhost {
                 case 11:
                     Chaser chaser = (Chaser) ghost;
                     chaser.findTarget();
-                    assertEquals(40, chaser.currentDirection);
+                    assertEquals(38, chaser.currentDirection);
                     break;
                 case 10:
                     Ambusher ambusher = (Ambusher) ghost;
@@ -333,7 +329,7 @@ public class TestGhost {
                     break;
                 case 9:
                     ghost.findTarget();
-                    assertEquals(40, ghost.currentDirection);
+                    assertEquals(38, ghost.currentDirection);
                     break;
             }
         }
@@ -450,5 +446,105 @@ public class TestGhost {
             assertEquals(ghost.x, ghost.initialX);
             assertEquals(ghost.previousState, ghost.state);
         }
+    }
+
+    @Test
+    public void testKill() {
+        // If ghost is not frightened, kill player, if ghost is frightened, ghost.state = REMOVE
+        GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_between_cells.json");
+        TestApp testGhostGameApp = new TestApp(testGhostGame);
+        PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
+        testGhostGameApp.setup();
+        testGhostGame.initMap(testGhostGameApp);
+        Ghost ghost = testGhostGame.ghosts.get(0);
+        testGhostGame.draw(testGhostGameApp);
+
+        // kill player
+        ghost.x = testGhostGame.player.x;
+        ghost.y = testGhostGame.player.y;
+        testGhostGame.draw(testGhostGameApp);
+        assertEquals(2, testGhostGame.player.getLife());
+
+        // kill ghost
+        ghost.frighten();
+        ghost.x = testGhostGame.player.x;
+        ghost.y = testGhostGame.player.y;
+        testGhostGame.draw(testGhostGameApp);
+        assertEquals(Ghost.REMOVED, ghost.state);
+        ghost.resetPosition();
+
+        // kill player when soda(extension)
+        ghost.frightenAndInvisible();
+        ghost.x = testGhostGame.player.x;
+        ghost.y = testGhostGame.player.y;
+        testGhostGame.draw(testGhostGameApp);
+        assertEquals(1, testGhostGame.player.getLife());
+    }
+
+    @Test
+    public void testHandleMovement() {
+        // Test ghost handleMovement() method
+        GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_between_cells.json");
+        TestApp testGhostGameApp = new TestApp(testGhostGame);
+        PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
+        testGhostGameApp.setup();
+        testGhostGame.initMap(testGhostGameApp);
+        Ghost ghost = testGhostGame.ghosts.get(0);
+        // handleMovement will do nothing if ghost has no route
+        ghost.route.clear();
+        ghost.handleMovement();
+        assertEquals(0, ghost.route.size());
+
+        // handleMovement will reset route if ghost wants to move back
+        ghost.resetPosition();
+        MapCell nextCell = new MapCell(null, 7, 1, 25);
+        ghost.route.clear();
+        ghost.currentDirection = 40;
+        ghost.route.add(nextCell);
+        ghost.target = nextCell;
+        ghost.handleMovement();
+        assertNotEquals(nextCell, ghost.target);
+
+        ghost.resetPosition();
+        nextCell = new MapCell(null, 7, 1, 27);
+        ghost.route.clear();
+        ghost.currentDirection = 38;
+        ghost.route.add(nextCell);
+        ghost.target = nextCell;
+        ghost.handleMovement();
+        assertNotEquals(nextCell, ghost.target);
+
+        ghost.resetPosition();
+        nextCell = new MapCell(null, 7, 0, 26);
+        ghost.route.clear();
+        ghost.currentDirection = 39;
+        ghost.route.add(nextCell);
+        ghost.target = nextCell;
+        ghost.handleMovement();
+        assertNotEquals(nextCell, ghost.target);
+
+        ghost.resetPosition();
+        nextCell = new MapCell(null, 7, 3, 26);
+        ghost.route.clear();
+        ghost.currentDirection = 37;
+        ghost.route.add(nextCell);
+        ghost.target = nextCell;
+        ghost.handleMovement();
+        assertNotEquals(nextCell, ghost.target);
+    }
+
+    @Test
+    public void testNullGhost() {
+        // when a map has no ghost, a NullGhost will be added to the map, its target will be itself and it does not draw
+        GameManager testGhostGame = new GameManager("src/test/resources/test_null_ghost.json");
+        TestApp testGhostGameApp = new TestApp(testGhostGame);
+        PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
+        testGhostGameApp.setup();
+        testGhostGame.draw(testGhostGameApp);
+        Ghost ghost = testGhostGame.ghosts.get(0);
+        ghost.findTarget();
+        assertEquals(ghost, ghost.target);
+        // the route will only have one cell, which is itself
+        assertEquals(1, ghost.route.size());
     }
 }

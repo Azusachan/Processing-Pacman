@@ -61,16 +61,16 @@ public class Ghost extends MovableCell{
             this.findTarget();
         }
 
-        this.handleFrightenMovement();
+        this.handleMovement();
         // stop when reached target (player or wall)
         if (!(this.route.size() == 0 && this.routePointer == 0)) {
             // still moving
             MapCell current = this.route.get(this.routePointer);
             if (current.getX() == this.x && current.getY() < this.y) {
-                this.currentDirection = 40;
+                this.currentDirection = 38;
                 this.y -= this.speed;
             } else if (current.getX() == this.x && current.getY() > this.y) {
-                this.currentDirection = 38;
+                this.currentDirection = 40;
                 this.y += this.speed;
             } else if (current.getX() < this.x && current.getY() == this.y) {
                 this.currentDirection = 37;
@@ -116,17 +116,17 @@ public class Ghost extends MovableCell{
     }
 
     // make sure ghost does not turn backwards and stop when frightened.
-    public void handleFrightenMovement() {
+    public void handleMovement() {
         if (this.route.size() == 0) {
             return;
         }
         MapCell current = this.route.get(this.routePointer);
         if (current.getX() == this.x && current.getY() < this.y) {
-            if (this.currentDirection == 38) {
+            if (this.currentDirection == 40) {
                 this.findTarget();
             }
         } else if (current.getX() == this.x && current.getY() > this.y) {
-            if (this.currentDirection == 40) {
+            if (this.currentDirection == 38) {
                 this.findTarget();
             }
         } else if (current.getX() < this.x && current.getY() == this.y) {
