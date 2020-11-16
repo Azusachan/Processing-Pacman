@@ -274,7 +274,7 @@ public class Ghost extends MovableCell{
                     this.routePointer = 0;
                     return;
             } else {
-                List<MapCellChild> children = getChildren(current, availableCells);
+                List<MapCellChild> children = getChildren(current, this.target, availableCells);
                 queue.addAll(children);
             }
             availableCells.remove(current.cell);
@@ -292,31 +292,36 @@ public class Ghost extends MovableCell{
         return path;
     }
 
-    public static List<MapCellChild> getChildren(MapCellChild current, List<MapCell> nearbyCells) {
+    public List<MapCellChild> getChildren(MapCellChild current, MapCell target, List<MapCell> nearbyCells) {
         List<MapCellChild> children = new ArrayList<>();
-            for (MapCell cell: nearbyCells) {
-                if (cell.cannotPassThrough()) {
-                    continue;
-                }
-                if (cell.movable()) {
-                    // make a cell from its initial position
-                    MovableCell movableCell = (MovableCell) cell;
-                    cell = new MapCell(null, cell.getType(), movableCell.initialX / 16, movableCell.initialY / 16);
-                }
-                if (((current.cell.getX()) == cell.getX() && current.cell.getY() - 16 == cell.getY())
-                            || (current.cell.getX()) == cell.getX() && current.cell.getY() + 16 == cell.getY()
-                            || (current.cell.getX() - 16 == cell.getX() && current.cell.getY() == cell.getY())
-                            || (current.cell.getX() + 16 == cell.getX() && current.cell.getY() == cell.getY())) {
-                    MapCellChild child = new MapCellChild(cell, current);
-                    children.add(child);
-                }
+        for (MapCell cell: nearbyCells) {
+            if (cell.cannotPassThrough()) {
+                continue;
             }
+            if (cell.movable()) {
+                // make a cell from its initial position
+                MovableCell movableCell = (MovableCell) cell;
+                cell = new MapCell(null, cell.getType(), movableCell.initialX / 16, movableCell.initialY / 16);
+            }
+            if (((current.cell.getX()) == cell.getX() && current.cell.getY() - 16 == cell.getY())
+                        || (current.cell.getX()) == cell.getX() && current.cell.getY() + 16 == cell.getY()
+                        || (current.cell.getX() - 16 == cell.getX() && current.cell.getY() == cell.getY())
+                        || (current.cell.getX() + 16 == cell.getX() && current.cell.getY() == cell.getY())) {
+                MapCellChild child = new MapCellChild(cell, current);
+                child.distance = Math.sqrt(
+                        Math.pow(child.cell.getX() - target.getX(), 2) + Math.pow(child.cell.getY() - target.getY(), 2));
+                children.add(child);
+            }
+        }
+        // Use Straight line distance to weight the branches
+        children.sort(Comparator.comparing(c -> c.distance));
         return children;
     }
 
     private static class MapCellChild{
         public MapCell cell;
         public MapCellChild parentCell;
+        public double distance;
 
         public MapCellChild(MapCell cell, MapCellChild parentCell) {
             this.cell = cell;
