@@ -152,7 +152,7 @@ public class TestGhost {
                     break;
                 case 10:
                     Ambusher ambusher = (Ambusher) ghost;
-                    assertEquals(40, ambusher.currentDirection);
+                    assertEquals(39, ambusher.currentDirection);
                     assertEquals(1, ambusher.targetCorner);
                     break;
                 case 9:
@@ -200,7 +200,7 @@ public class TestGhost {
                 case 10:
                     Ambusher ambusher = (Ambusher) ghost;
                     ambusher.findTarget();
-                    assertEquals(40, ambusher.currentDirection);
+                    assertEquals(39, ambusher.currentDirection);
                     break;
                 case 9:
                     assertEquals(40, ghost.currentDirection);
@@ -242,7 +242,7 @@ public class TestGhost {
                 case 10:
                     Ambusher ambusher = (Ambusher) ghost;
                     ambusher.findTarget();
-                    assertEquals(40, ambusher.currentDirection);
+                    assertEquals(39, ambusher.currentDirection);
                     break;
                 case 9:
                     ghost.findTarget();
@@ -285,7 +285,7 @@ public class TestGhost {
                 case 10:
                     Ambusher ambusher = (Ambusher) ghost;
                     ambusher.findTarget();
-                    assertEquals(40, ambusher.currentDirection);
+                    assertEquals(39, ambusher.currentDirection);
                     break;
                 case 9:
                     ghost.findTarget();
@@ -329,7 +329,7 @@ public class TestGhost {
                 case 10:
                     Ambusher ambusher = (Ambusher) ghost;
                     ambusher.findTarget();
-                    assertEquals(40, ambusher.currentDirection);
+                    assertEquals(39, ambusher.currentDirection);
                     break;
                 case 9:
                     ghost.findTarget();
@@ -341,6 +341,7 @@ public class TestGhost {
 
     @Test
     public void testGhostMoving() {
+        // test will the routePointer change when ghost is at next cell on its route
         GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_between_cells.json");
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
@@ -351,17 +352,18 @@ public class TestGhost {
         ghost.x = ghost.route.get(ghost.routePointer).x;
         ghost.y = ghost.route.get(ghost.routePointer).y;
         testGhostGame.draw(testGhostGameApp);
-        ghost.state = 0;
+        ghost.setState(Ghost.CHASE);
         ghost.findTarget();
-        testGhostGame.draw(testGhostGameApp);
-        ghost.x = ghost.route.get(ghost.routePointer).x;
-        ghost.y = ghost.route.get(ghost.routePointer).y;
+        while (!ghost.equals(ghost.route.get(ghost.routePointer))) {
+            testGhostGame.draw(testGhostGameApp);
+        }
         testGhostGame.draw(testGhostGameApp);
         assertEquals(1, ghost.routePointer);
     }
 
     @Test
     public void testFrightened() {
+        // test if the ghost can correctly set to frighten mode and return to previous mode after frightened_duration
         GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_chase_extended.json");
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
@@ -372,11 +374,12 @@ public class TestGhost {
         for (Ghost ghost: testGhostGame.ghosts) {
             assertNotNull(ghost.route);
             assertEquals(2, ghost.state);
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
-            }
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+        }
+        for (Ghost ghost: testGhostGame.ghosts){
             ghost.draw(testGhostGameApp);
             assertEquals(1, ghost.state);
         }
@@ -387,14 +390,33 @@ public class TestGhost {
         for (Ghost ghost: testGhostGame.ghosts) {
             assertNotNull(ghost.route);
             assertEquals(4, ghost.state);
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
-            }
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+        }
+        for (Ghost ghost: testGhostGame.ghosts){
             ghost.draw(testGhostGameApp);
             assertEquals(1, ghost.state);
         }
+    }
+
+    @Test
+    public void testFrightenedFindNextTarget() {
+        // When ghost is frightened and teleported to the target location, it will find a new target and refresh route
+        GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_between_cells.json");
+        TestApp testGhostGameApp = new TestApp(testGhostGame);
+        PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
+        testGhostGameApp.setup();
+        testGhostGame.initMap(testGhostGameApp);
+        Ghost ghost = testGhostGame.ghosts.get(0);
+        ghost.frighten();
+        MapCell target = ghost.target;
+        while (!ghost.equals(ghost.target)) {
+            testGhostGame.draw(testGhostGameApp);
+        }
+        testGhostGame.draw(testGhostGameApp);
+        assertNotEquals(target, ghost.target);
     }
 
     @Test
@@ -414,7 +436,7 @@ public class TestGhost {
             ghost.tick(nearByCells);
             ghost.x = ghost.route.get(ghost.routePointer).x;
             ghost.y = ghost.route.get(ghost.routePointer).y;
-            ghost.previousState = 1;
+            ghost.setPreviousState(1);
             // Ghost will only reset state if state = REMOVED
             ghost.state = 3;
             ghost.tick(nearByCells);

@@ -39,24 +39,16 @@ public class Utility {
         }
         double minimumDistance = 9999;
         MapCell result = null;
-        boolean isValidLine = false;
         List<MapCell> cells = new ArrayList<>();
         for (MapCell[] cellList: list) {
-            int counter = 0;
             boolean isValidCell = false;
             for (MapCell cell : cellList) {
-                if (cell.getType() == 1) {
-                    counter++;
-                }
-                if (isValidLine && isValidCell) {
+                if (isValidCell) {
                     cells.add(cell);
                 }
-                if (cell.getType() == 2 || cell.getType() == 3 || cell.getType() == 4) {
+                if (cell.getType() >= 2 && cell.getType() <= 6) {
                     isValidCell = !isValidCell;
                 }
-            }
-            if (counter > 20) {
-                isValidLine = !isValidLine;
             }
         }
         for (MapCell cell: cells) {
