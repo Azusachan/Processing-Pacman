@@ -27,6 +27,8 @@ public class Ignorant extends Ghost{
                 double distance = Math.sqrt(Math.pow(player.getX() - this.x, 2) + Math.pow(player.getY() - this.y, 2));
                 if (distance > 128) {
                     this.target = findClosestMovableCell(0, 576, map);
+                    this.vectorX = 0;
+                    this.vectorY = 576;
                 } else {
                     this.target = this.player;
                     this.vectorX = this.player.getX() + 8;

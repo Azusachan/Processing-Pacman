@@ -61,9 +61,7 @@ public class Ghost extends MovableCell{
             this.findTarget();
         }
 
-        if (this.state == FRIGHTENED || this.state == FRIGHTENED_AND_INVISIBLE) {
-            this.handleFrightenMovement();
-        }
+        this.handleFrightenMovement();
         // stop when reached target (player or wall)
         if (!(this.route.size() == 0 && this.routePointer == 0)) {
             // still moving
@@ -104,7 +102,7 @@ public class Ghost extends MovableCell{
 
         if (Math.abs(this.player.getX() - this.x) <= 2 && Math.abs(this.player.getY() - this.y) <= 2) {
             if (this.state == FRIGHTENED || this.state == REMOVED) {
-                this.state = REMOVED;
+                this.setState(REMOVED);
                 this.findTarget();
             } else {
                 killed = true;
@@ -119,6 +117,9 @@ public class Ghost extends MovableCell{
 
     // make sure ghost does not turn backwards and stop when frightened.
     public void handleFrightenMovement() {
+        if (this.route.size() == 0) {
+            return;
+        }
         MapCell current = this.route.get(this.routePointer);
         if (current.getX() == this.x && current.getY() < this.y) {
             if (this.currentDirection == 38) {
@@ -141,6 +142,7 @@ public class Ghost extends MovableCell{
 
     public void setState(int state) {
         this.state = state;
+        this.currentDirection = 0;
     }
 
     public void setPreviousState(int state) {
@@ -161,13 +163,13 @@ public class Ghost extends MovableCell{
 
     public void frighten(){
         this.previousState = this.state;
-        this.state = FRIGHTENED;
+        this.setState(FRIGHTENED);
         this.findTarget();
     }
 
     public void frightenAndInvisible(){
         this.previousState = this.state;
-        this.state = FRIGHTENED_AND_INVISIBLE;
+        this.setState(FRIGHTENED_AND_INVISIBLE);
         this.findTarget();
     }
 
@@ -179,7 +181,7 @@ public class Ghost extends MovableCell{
             delta = delta / 1000;
             if (delta >= frightenedDuration) {
                 this.frightenedTimer = 0;
-                this.state = this.previousState;
+                this.setState(this.previousState);
             }
         }
     }
@@ -333,7 +335,7 @@ public class Ghost extends MovableCell{
     public void resetPosition() {
         super.resetPosition();
         if (this.state == REMOVED || this.state == FRIGHTENED_AND_INVISIBLE) {
-            this.state = this.previousState;
+            this.setState(this.previousState);
         }
         this.target = null;
         this.route.clear();

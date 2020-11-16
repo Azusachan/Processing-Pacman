@@ -131,7 +131,7 @@ public class TestGhost {
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
-        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.state = 0);
+        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
         for (Ghost ghost: testGhostGame.ghosts) {
             ghost.draw(testGhostGameApp);
@@ -161,7 +161,7 @@ public class TestGhost {
                     break;
             }
             ghost.player = null;
-            ghost.state = 0;
+            ghost.setState(Ghost.CHASE);
             ghost.findTarget();
             assertNotNull(ghost.player);
         }
@@ -174,7 +174,7 @@ public class TestGhost {
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
-        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.state = 0);
+        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
 
         testGhostGame.initMap(testGhostGameApp);
         for (Ghost ghost: testGhostGame.ghosts) {
@@ -216,7 +216,7 @@ public class TestGhost {
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
-        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.state = 0);
+        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         for (Ghost ghost: testGhostGame.ghosts) {
 
             MovableCell player = (MovableCell) ghost.player;
@@ -259,7 +259,7 @@ public class TestGhost {
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
-        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.state = 0);
+        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
 
         for (Ghost ghost: testGhostGame.ghosts) {
             MovableCell player = (MovableCell) ghost.player;
@@ -302,7 +302,7 @@ public class TestGhost {
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
-        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.state = 0);
+        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
 
         for (Ghost ghost: testGhostGame.ghosts) {
@@ -426,7 +426,7 @@ public class TestGhost {
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
-        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.state = 0);
+        testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
 
         for (Ghost ghost: testGhostGame.ghosts) {
@@ -438,7 +438,7 @@ public class TestGhost {
             ghost.y = ghost.route.get(ghost.routePointer).y;
             ghost.setPreviousState(1);
             // Ghost will only reset state if state = REMOVED
-            ghost.state = 3;
+            ghost.setState(Ghost.REMOVED);
             ghost.tick(nearByCells);
             assertEquals(1, ghost.routePointer);
             ghost.resetPosition();

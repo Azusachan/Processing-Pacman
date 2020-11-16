@@ -204,35 +204,35 @@ public class GameManager {
                     case GHOST:
                         Ghost newGhost = new Ghost(ghost, 9, col, row);
                         newGhost.setSpeed(speed);
-                        newGhost.setState(1);
+                        newGhost.setState(Ghost.SCATTER);
                         ghostList.add(newGhost);
                         mapList[row][col] = newGhost;
                         break;
                     case AMBUSHER:
                         Ghost newAmbusher = new Ambusher(ambusher, 10, col, row);
                         newAmbusher.setSpeed(speed);
-                        newAmbusher.setState(1);
+                        newAmbusher.setState(Ghost.SCATTER);
                         ghostList.add(newAmbusher);
                         mapList[row][col] = newAmbusher;
                         break;
                     case CHASER:
                         Ghost newChaser = new Chaser(chaser, 11, col, row);
                         newChaser.setSpeed(speed);
-                        newChaser.setState(1);
+                        newChaser.setState(Ghost.SCATTER);
                         ghostList.add(newChaser);
                         mapList[row][col] = newChaser;
                         break;
                     case IGNORANT:
                         Ghost newIgnorant = new Ignorant(ignorant, 12, col, row);
                         newIgnorant.setSpeed(speed);
-                        newIgnorant.setState(1);
+                        newIgnorant.setState(Ghost.SCATTER);
                         ghostList.add(newIgnorant);
                         mapList[row][col] = newIgnorant;
                         break;
                     case WHIM:
                         Ghost newWhim = new Whim(whim, 13, col, row);
                         newWhim.setSpeed(speed);
-                        newWhim.setState(1);
+                        newWhim.setState(Ghost.SCATTER);
                         ghostList.add(newWhim);
                         mapList[row][col] = newWhim;
                         break;
@@ -250,7 +250,7 @@ public class GameManager {
         if (ghostList.isEmpty()) {
             Ghost newGhost = new NullGhost(ghost);
             newGhost.setSpeed(speed);
-            newGhost.setState(1);
+            newGhost.setState(Ghost.SCATTER);
             ghostList.add(newGhost);
         }
         player.setSpeed(speed);
@@ -382,9 +382,9 @@ public class GameManager {
             if (changeGhostState){
                 if (ghost.state < 2) {
                     if (this.modePointer % 2 == 0) {
-                        ghost.setState(1);
+                        ghost.setState(Ghost.SCATTER);
                     } else {
-                        ghost.setState(0);
+                        ghost.setState(Ghost.CHASE);
                     }
                     ghost.findTarget();
                 } else {

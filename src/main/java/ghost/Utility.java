@@ -1,9 +1,13 @@
 package ghost;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class Utility {
+    private static List<MapCell> validCells;
+
     public static List<MapCell> findNearbyCells(int x, int y, MapCell[][] list) {
         List<MapCell> result = new ArrayList<>();
         for (MapCell[] cellList: list) {
@@ -25,8 +29,7 @@ public class Utility {
         return result;
     }
 
-    // only supports map that has same width as game window
-    public static MapCell findClosestMovableCell(int x, int y, MapCell[][] list) {
+    public static MapCell findClosestMovableCell(int x, int y, MapCell[][] map) {
         if (x < 0) {
             x = 0;
         } else if (x > 448) {
@@ -39,18 +42,7 @@ public class Utility {
         }
         double minimumDistance = 9999;
         MapCell result = null;
-        List<MapCell> cells = new ArrayList<>();
-        for (MapCell[] cellList: list) {
-            boolean isValidCell = false;
-            for (MapCell cell : cellList) {
-                if (isValidCell) {
-                    cells.add(cell);
-                }
-                if (cell.getType() >= 2 && cell.getType() <= 6) {
-                    isValidCell = !isValidCell;
-                }
-            }
-        }
+        List<MapCell> cells = findValidCells(map);
         for (MapCell cell: cells) {
             double distance;
             if (cell.movable()) {
@@ -67,5 +59,61 @@ public class Utility {
             }
         }
         return result;
+    }
+
+    public static List<MapCell> findValidCells(MapCell[][] map) {
+        if (Utility.validCells != null) {
+            return Utility.validCells;
+        }
+        List<UtilityMapCell> availableCells = new ArrayList<>();
+        for (MapCell[] cellList: map) {
+            for (MapCell cell: cellList) {
+                availableCells.add(new UtilityMapCell(cell));
+            }
+        }
+        UtilityMapCell player = null;
+        for (UtilityMapCell cell: availableCells) {
+            if (cell.cell.getType() == 8) {
+                player = cell;
+            }
+        }
+        Queue<UtilityMapCell> queue = new LinkedList<>();
+        queue.add(player);
+        List<MapCell> result = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            UtilityMapCell current = queue.remove();
+            current.wentThrough = true;
+            result.add(current.cell);
+            List<UtilityMapCell> children = getChildren(current, availableCells);
+            queue.addAll(children);
+        }
+        Utility.validCells = result;
+        return result;
+    }
+
+    private static List<UtilityMapCell> getChildren(UtilityMapCell current, List<UtilityMapCell> availableCells) {
+        List<UtilityMapCell> children = new ArrayList<>();
+        for (UtilityMapCell cell: availableCells) {
+            if (cell.cell.cannotPassThrough() || cell.wentThrough) {
+                continue;
+            }
+            if (((current.cell.getX()) == cell.cell.getX() && current.cell.getY() - 16 == cell.cell.getY())
+                    || (current.cell.getX()) == cell.cell.getX() && current.cell.getY() + 16 == cell.cell.getY()
+                    || (current.cell.getX() - 16 == cell.cell.getX() && current.cell.getY() == cell.cell.getY())
+                    || (current.cell.getX() + 16 == cell.cell.getX() && current.cell.getY() == cell.cell.getY())) {
+                children.add(cell);
+                }
+            }
+        return children;
+    }
+    
+    private static class UtilityMapCell {
+        MapCell cell;
+        boolean wentThrough;
+
+        public UtilityMapCell(MapCell cell) {
+            this.cell = cell;
+            this.wentThrough = false;
+        }
     }
 }
