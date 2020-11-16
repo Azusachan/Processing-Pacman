@@ -1,0 +1,10 @@
+{
+  "map": "src/test/resources/test_ghost_chase_extended_map.txt",
+  "lives": 3,
+  "speed": 1,
+  "modeLengths": [
+    10,
+    10
+  ],
+  "frightenedLength": 0
+}
