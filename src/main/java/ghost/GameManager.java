@@ -535,7 +535,7 @@ public class GameManager {
 
     // for some unknown reason, any call to draw rectangle has little chance to raise NullPointerException
     // this would only happen if repetitively run test cases
-    public void rect(PApplet app, float a, float b, float c, float d) {
+    public static void rect(PApplet app, float a, float b, float c, float d) {
         try {
             app.fill(0);
             app.rect(a, b, c, d);
