@@ -5,7 +5,7 @@ import processing.core.PImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovableCell extends MapCell{
+public abstract class MovableCell extends MapCell{
     public int x;
     public int y;
     public final int initialX;

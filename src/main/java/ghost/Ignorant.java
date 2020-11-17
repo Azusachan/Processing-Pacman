@@ -40,6 +40,7 @@ public class Ignorant extends Ghost{
                 this.targetCorner = 2;
                 break;
             case FRIGHTENED:
+            case FRIGHTENED_AND_INVISIBLE:
                 List<MapCell> availableCells = new ArrayList<>();
 
                 // choose random cell

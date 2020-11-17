@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestGhost {
     @Test
     public void testInitialize()  {
+        // Test all variables of each type of ghost is correctly initialized
         GameManager testGhostGame = new GameManager("src/test/resources/test_ghost.json");
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
@@ -82,6 +83,7 @@ public class TestGhost {
 
     @Test
     public void testDrawAndTick() {
+        // test the tick method, called by GameManager.draw() -> GameManager.updatePlayer() can correctly set direction
         GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_chase.json");
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
@@ -124,6 +126,7 @@ public class TestGhost {
 
     @Test
     public void testChase() {
+        // Test the chase mode of Ghost can work with different type of ghost and set ghost.player if player = null
         GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_chase.json");
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
@@ -168,6 +171,7 @@ public class TestGhost {
 
     @Test
     public void testChaseExtendedUp() {
+        // Test chase can work differently when player turns at different directions
         GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_chase_extended.json");
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
@@ -337,24 +341,56 @@ public class TestGhost {
 
     @Test
     public void testGhostMoving() {
-        // test will the routePointer change when ghost is at next cell on its route
+        // test ghost correctly move towards next cell in route
         GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_between_cells.json");
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
         Ghost ghost = testGhostGame.ghosts.get(0);
-        testGhostGame.draw(testGhostGameApp);
-        ghost.x = ghost.route.get(ghost.routePointer).x;
-        ghost.y = ghost.route.get(ghost.routePointer).y;
-        testGhostGame.draw(testGhostGameApp);
-        ghost.setState(Ghost.CHASE);
-        ghost.findTarget();
-        while (!ghost.equals(ghost.route.get(ghost.routePointer))) {
-            testGhostGame.draw(testGhostGameApp);
-        }
-        testGhostGame.draw(testGhostGameApp);
-        assertEquals(1, ghost.routePointer);
+
+        MapCell nextCell = new MapCell(null, 7, 10, 25);
+        ghost.route.clear();
+        ghost.route.add(nextCell);
+        ghost.target = nextCell;
+
+        ghost.x = 160;
+        ghost.y = 416;
+        List<MapCell> nearByCells = Utility.findNearbyCells(ghost.x, ghost.y, Ghost.map);
+        ghost.tick(nearByCells);
+        assertEquals(38, ghost.currentDirection);
+
+        ghost.x = 160;
+        ghost.y = 384;
+        nearByCells = Utility.findNearbyCells(ghost.x, ghost.y, Ghost.map);
+        ghost.tick(nearByCells);
+        assertEquals(40, ghost.currentDirection);
+
+        ghost.x = 144;
+        ghost.y = 400;
+        nearByCells = Utility.findNearbyCells(ghost.x, ghost.y, Ghost.map);
+        ghost.tick(nearByCells);
+        assertEquals(39, ghost.currentDirection);
+
+        ghost.x = 176;
+        ghost.y = 400;
+        nearByCells = Utility.findNearbyCells(ghost.x, ghost.y, Ghost.map);
+        ghost.tick(nearByCells);
+        assertEquals(37, ghost.currentDirection);
+
+        // To handle error when ghost is turning and refreshing route list, these edge cases are added
+        ghost.x = 144;
+        ghost.y = 401;
+        nearByCells = Utility.findNearbyCells(ghost.x, ghost.y, Ghost.map);
+        ghost.tick(nearByCells);
+        assertEquals(39, ghost.currentDirection);
+
+        ghost.x = 176;
+        ghost.y = 401;
+        nearByCells = Utility.findNearbyCells(ghost.x, ghost.y, Ghost.map);
+        ghost.tick(nearByCells);
+        assertEquals(37, ghost.currentDirection);
+
     }
 
     @Test
@@ -417,6 +453,7 @@ public class TestGhost {
 
     @Test
     public void testReset() {
+        // Test the ghost's location and state is correctly reset
         GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_chase_extended.json");
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
@@ -436,9 +473,8 @@ public class TestGhost {
             // Ghost will only reset state if state = REMOVED
             ghost.setState(Ghost.REMOVED);
             ghost.tick(nearByCells);
-            assertEquals(1, ghost.routePointer);
             ghost.resetPosition();
-            System.out.println();
+            assertNotEquals(Ghost.REMOVED, ghost.state);
         }
         // use ghost.routePointer, ghost.initialX and ghost.previousState to test if the ghost is correctly reset
         for (Ghost ghost: testGhostGame.ghosts) {
@@ -546,5 +582,64 @@ public class TestGhost {
         assertEquals(ghost, ghost.target);
         // the route will only have one cell, which is itself
         assertEquals(1, ghost.route.size());
+    }
+
+    @Test
+    public void testRemoved() {
+        // test the ghost's behavior when enters removed state
+        GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_chase.json");
+        TestApp testGhostGameApp = new TestApp(testGhostGame);
+        PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
+        testGhostGameApp.setup();
+        testGhostGame.initMap(testGhostGameApp);
+        testGhostGame.ghosts.parallelStream().forEach(g -> g.setState(Ghost.REMOVED));
+        testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
+        testGhostGame.draw(testGhostGameApp);
+        for (Ghost ghost: testGhostGame.ghosts) {
+            assertEquals(ghost, ghost.target);
+        }
+    }
+
+    @Test
+    public void testGetChildren() {
+        // When ghost has a moving direction, getChildren should toss away the cell at its opposite direction to ensure
+        // it does not turn back
+        GameManager testGhostGame = new GameManager("src/test/resources/test_ghost_between_cells.json");
+        TestApp testGhostGameApp = new TestApp(testGhostGame);
+        PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
+        testGhostGameApp.setup();
+        testGhostGame.initMap(testGhostGameApp);
+        Ghost ghost = testGhostGame.ghosts.get(0);
+        ghost.x = 160;
+        ghost.y = 400;
+        List<MapCell> nearByCells = Utility.findNearbyCells(ghost.x, ghost.y, Ghost.map);
+        ghost.currentDirection = 38;
+        MapCell ignoredCell = new MapCell(null, 7, 160, 416);
+        List<Ghost.MapCellChild> children = ghost.getChildren(
+                new Ghost.MapCellChild(ghost, null), ghost, nearByCells);
+        for (Ghost.MapCellChild child: children) {
+            assertNotEquals(ignoredCell, child.cell);
+        }
+
+        ghost.currentDirection = 40;
+        ignoredCell = new MapCell(null, 7, 160, 384);
+        children = ghost.getChildren(new Ghost.MapCellChild(ghost, null), ghost, nearByCells);
+        for (Ghost.MapCellChild child: children) {
+            assertNotEquals(ignoredCell, child.cell);
+        }
+
+        ghost.currentDirection = 37;
+        ignoredCell = new MapCell(null, 7, 176, 400);
+        children = ghost.getChildren(new Ghost.MapCellChild(ghost, null), ghost, nearByCells);
+        for (Ghost.MapCellChild child: children) {
+            assertNotEquals(ignoredCell, child.cell);
+        }
+
+        ghost.currentDirection = 39;
+        ignoredCell = new MapCell(null, 7, 144, 400);
+        children = ghost.getChildren(new Ghost.MapCellChild(ghost, null), ghost, nearByCells);
+        for (Ghost.MapCellChild child: children) {
+            assertNotEquals(ignoredCell, child.cell);
+        }
     }
 }

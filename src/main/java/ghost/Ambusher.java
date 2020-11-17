@@ -55,6 +55,7 @@ public class Ambusher extends Ghost {
                 this.targetCorner = 1;
                 break;
             case FRIGHTENED:
+            case FRIGHTENED_AND_INVISIBLE:
                 List<MapCell> availableCells = new ArrayList<>();
                 for (MapCell[] cells: getMap()) {
                     availableCells.addAll(Arrays.asList(cells).

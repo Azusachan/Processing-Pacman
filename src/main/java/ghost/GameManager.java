@@ -343,7 +343,7 @@ public class GameManager {
         this.startTime = app.millis();
         this.modePointer = 0;
         this.ghosts.parallelStream().forEach(Ghost::resetPosition);
-        this.ghosts.parallelStream().forEach(g -> g.state = 1);
+        this.ghosts.parallelStream().forEach(g -> g.setState(Ghost.SCATTER));
         this.fruits.parallelStream().forEach(Fruit::restore);
         this.player.resetPosition();
         this.state = INITIALIZE;

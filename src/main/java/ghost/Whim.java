@@ -67,6 +67,7 @@ public class Whim extends Ghost{
                 this.targetCorner = 3;
                 break;
             case FRIGHTENED:
+            case FRIGHTENED_AND_INVISIBLE:
                 List<MapCell> availableCells = new ArrayList<>();
 
                 // choose random cell

@@ -61,7 +61,9 @@ public class Ghost extends MovableCell{
             this.findTarget();
         }
 
-        this.handleMovement();
+        if (this.state == FRIGHTENED || this.state == FRIGHTENED_AND_INVISIBLE) {
+            this.handleMovement();
+        }
         // stop when reached target (player or wall)
         if (!(this.route.size() == 0 && this.routePointer == 0)) {
             // still moving
@@ -79,9 +81,13 @@ public class Ghost extends MovableCell{
                 this.currentDirection = 39;
                 this.x += this.speed;
             } else if (current.getX() != this.x && current.getY() != this.y) {
-                // happens when ghost is between cells and refresh route list
-                this.route.add(0, this.stepOnCell);
-                this.routePointer = 0;
+                if (this.x > current.getX()) {
+                    this.currentDirection = 37;
+                    this.x -= this.speed;
+                } else {
+                    this.currentDirection = 39;
+                    this.x += this.speed;
+                }
             } else if (this.equals(current)) {
                 if (!this.equals(this.target)) {
                     if (this.routePointer == this.route.size() - 1) {
@@ -300,6 +306,30 @@ public class Ghost extends MovableCell{
             if (cell.cannotPassThrough()) {
                 continue;
             }
+            if (current.parentCell == null) {
+                switch (this.currentDirection) {
+                    case 38:
+                        if (this.x == cell.getX() && this.y + 16 == cell.getY()) {
+                            continue;
+                        }
+                        break;
+                    case 40:
+                        if (this.x == cell.getX() && this.y - 16 == cell.getY()) {
+                            continue;
+                        }
+                        break;
+                    case 37:
+                        if (this.x + 16 == cell.getX() && this.y == cell.getY()) {
+                            continue;
+                        }
+                        break;
+                    case 39:
+                        if (this.x - 16 == cell.getX() && this.y == cell.getY()) {
+                            continue;
+                        }
+                        break;
+                }
+            }
             if (cell.movable()) {
                 // make a cell from its initial position
                 MovableCell movableCell = (MovableCell) cell;
@@ -320,7 +350,7 @@ public class Ghost extends MovableCell{
         return children;
     }
 
-    private static class MapCellChild{
+    public static class MapCellChild{
         public MapCell cell;
         public MapCellChild parentCell;
         public double distance;
