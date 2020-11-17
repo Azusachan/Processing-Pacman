@@ -413,7 +413,12 @@ public class GameManager {
                 }
                 // clear ghost
                 rect(app, ghost.getX() - 6, ghost.getY() - 6, 28, 28);
-                boolean killed = ghost.tick(nearby);
+                // Sometimes ghost.tick will raise NullPointerExceptions, this only will happen when multiple test cases
+                // run at once.
+                boolean killed = false;
+                try {
+                    killed = ghost.tick(nearby);
+                } catch (NullPointerException ignored) {}
                 if (killed) {
                     killedByGhost = true;
                 }

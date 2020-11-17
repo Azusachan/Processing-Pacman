@@ -61,6 +61,10 @@ public class TestWaka {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         Waka player = testGhostGame.player;
         // 180 turns

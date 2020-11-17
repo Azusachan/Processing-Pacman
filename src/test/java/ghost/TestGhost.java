@@ -89,6 +89,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
         testGhostGame.draw(testGhostGameApp);
@@ -181,6 +185,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
 
@@ -223,6 +231,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         testGhostGame.draw(testGhostGameApp);
@@ -265,6 +277,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         testGhostGame.draw(testGhostGameApp);
@@ -307,6 +323,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
@@ -351,6 +371,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         Ghost ghost = testGhostGame.ghosts.get(0);
 
@@ -405,6 +429,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.forEach(Ghost::frighten);
         testGhostGame.draw(testGhostGameApp);
@@ -445,6 +473,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         // move player away to make sure that it is not accidentally killed
         testGhostGame.player.x = 0;
@@ -466,6 +498,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
@@ -499,6 +535,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         Ghost ghost = testGhostGame.ghosts.get(0);
         testGhostGame.draw(testGhostGameApp);
@@ -532,6 +572,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         Ghost ghost = testGhostGame.ghosts.get(0);
         // handleMovement will do nothing if ghost has no route
@@ -584,6 +628,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.draw(testGhostGameApp);
         Ghost ghost = testGhostGame.ghosts.get(0);
         ghost.findTarget();
@@ -599,6 +647,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(g -> g.setState(Ghost.REMOVED));
         testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
@@ -616,6 +668,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         Ghost ghost = testGhostGame.ghosts.get(0);
         ghost.x = 160;

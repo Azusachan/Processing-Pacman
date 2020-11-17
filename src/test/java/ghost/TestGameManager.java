@@ -230,6 +230,10 @@ class TestGameManager {
         };
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.startTime = 0;
         boolean result = testGhostGame.updateTimer(testGhostGameApp);
         assertEquals(10000, testGhostGame.startTime);
