@@ -11,8 +11,8 @@ public class NullGhost extends Ghost{
 
     @Override
     public void findTarget() {
-        this.x = target.getX();
-        this.y = target.getY();
+        this.x = this.target.getX();
+        this.y = this.target.getY();
         super.findRoute();
     }
 

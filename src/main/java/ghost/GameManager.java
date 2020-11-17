@@ -11,6 +11,8 @@ import processing.core.PImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static ghost.Utility.findNearbyCells;
 
@@ -48,9 +50,9 @@ public class GameManager {
     private final JSONObject config;
     public Waka player;
 
-    private int debug;
+    public int debug;
     public int state;
-    private int startTime;
+    public int startTime;
     public int modePointer;
     public List<Integer> modeLengths;
 
@@ -64,14 +66,14 @@ public class GameManager {
             configObject = (JSONObject) parser.parse(reader);
         } catch (IOException e) {
             System.out.println("No configuration");
-            System.exit(0);
+            System.exit(1);
         } catch (ParseException e) {
             System.out.println("Error in configuration");
-            System.exit(0);
+            System.exit(1);
         }
         if (configObject == null) {
             System.out.println("Error in configuration");
-            System.exit(0);
+            System.exit(1);
         }
         this.config = configObject;
         this.debug = DEBUG_OFF;
@@ -85,7 +87,7 @@ public class GameManager {
         String mapLocation = (String) this.config.get("map");
         if (mapLocation == null) {
             System.out.println("Error in config: map");
-            System.exit(0);
+            System.exit(1);
         }
         PImage horizontal = app.loadImage("src/main/resources/horizontal.png");
         PImage vertical = app.loadImage("src/main/resources/vertical.png");
@@ -125,16 +127,16 @@ public class GameManager {
             reader.close();
         } catch (IOException e) {
             System.out.println("Error in map: IOException");
-            System.exit(0);
+            System.exit(1);
         }
         if (lines.size() != 36 || lines.get(0).length() != 28) {
             System.out.println("Error in map: size");
-            System.exit(0);
+            System.exit(1);
         }
         int speed = ((Long) this.config.get("speed")).intValue();
         if (speed > 2 || speed <= 0) {
             System.out.println("Error in config: speed");
-            System.exit(0);
+            System.exit(1);
         }
         List<Integer> modeLengths = new ArrayList<>();
         JSONArray modeLengthsJSON =(JSONArray) this.config.get("modeLengths");
@@ -144,7 +146,7 @@ public class GameManager {
             }
         } else {
             System.out.println("Error in config: modeLengths");
-            System.exit(0);
+            System.exit(1);
         }
         int frightened = ((Long) this.config.get("frightenedLength")).intValue();
         this.modeLengths = modeLengths;
@@ -238,17 +240,17 @@ public class GameManager {
                         break;
                     default:
                         System.out.println("Error in map: unknown configuration");
-                        System.exit(0);
+                        System.exit(1);
                 }
             }
         }
         if (player == null) {
             System.out.println("Error in map: no player");
-            System.exit(0);
+            System.exit(1);
         }
         if (fruitList.isEmpty()) {
             System.out.println("Error in map: no fruit");
-            System.exit(0);
+            System.exit(1);
         }
         // create a nullGhost which effectively does nothing when the map does not contain anything
         if (ghostList.isEmpty()) {
@@ -261,13 +263,13 @@ public class GameManager {
         int life = ((Long) this.config.get("lives")).intValue();
         if (life <= 0) {
             System.out.println("Error in config: lives");
-            System.exit(0);
+            System.exit(1);
         }
         player.setLife(life);
         this.mapCells = mapList;
         this.player = player;
-        this.ghosts = ghostList;
-        this.fruits = fruitList;
+        this.ghosts = ghostList.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        this.fruits = fruitList.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public void draw(PApplet app) {
@@ -298,8 +300,7 @@ public class GameManager {
     }
 
     public void initMap(PApplet app) {
-        app.fill(0);
-        app.rect(0, 0, 448, 576);
+        rect(app, 0, 0, 448, 576);
         for (MapCell[] line : this.mapCells) {
             for (MapCell cell : line) {
                 cell.draw(app);
@@ -312,8 +313,7 @@ public class GameManager {
 
     public void updateFruits(PApplet app) {
         for (Fruit f : this.fruits) {
-            app.fill(0);
-            app.rect(f.getX(), f.getY(), 16, 16);
+            rect(app, f.getX(), f.getY(), 16, 16);
             f.draw(app);
         }
         this.state = UPDATE_PLAYER;
@@ -325,20 +325,20 @@ public class GameManager {
     }
 
     public void win(PApplet app) {
-        app.fill(0);
-        app.rect(0, 0, 448, 576);
+        rect(app, 0, 0, 448, 576);
         app.fill(255);
         app.textAlign(app.CENTER);
         app.text("YOU WIN", 224, 288);
+        app.noFill();
         this.state = RESET;
     }
 
     public void lose(PApplet app) {
-        app.fill(0);
-        app.rect(0, 0, 448, 576);
+        rect(app, 0, 0, 448, 576);
         app.fill(255);
         app.textAlign(app.CENTER);
         app.text("GAME OVER", 224, 288);
+        app.noFill();
         this.state = RESET;
     }
 
@@ -372,8 +372,7 @@ public class GameManager {
 
     public void updatePlayers(PApplet app) {
         if (this.debug != DEBUG_OFF) {
-            app.fill(0);
-            app.rect(0, 0, 448, 576);
+            rect(app, 0, 0, 448, 576);
             for (MapCell[] line : this.mapCells) {
                 for (MapCell cell : line) {
                     cell.draw(app);
@@ -400,7 +399,7 @@ public class GameManager {
                 }
             }
             //update player every 16 frames
-            if (ghost.state == 0 && app.frameCount%16 == 0) {
+            if (ghost.state == Ghost.CHASE && app.frameCount%16 == 0) {
                 ghost.findTarget();
             }
             List<MapCell> nearby = findNearbyCells(ghost.getX(), ghost.getY(), this.mapCells);
@@ -408,14 +407,12 @@ public class GameManager {
             if (ghost.state != 3) {
                 for (MapCell cell : nearby) {
                     if (cell.getType() == 7) {
-                        app.fill(0);
-                        app.rect(cell.getX(), cell.getY(), 16, 16);
+                        rect(app, cell.getX(), cell.getY(), 16, 16);
                         cell.draw(app);
                     }
                 }
                 // clear ghost
-                app.fill(0);
-                app.rect(ghost.getX() - 6, ghost.getY() - 6, 28, 28);
+                rect(app, ghost.getX() - 6, ghost.getY() - 6, 28, 28);
                 boolean killed = ghost.tick(nearby);
                 if (killed) {
                     killedByGhost = true;
@@ -423,16 +420,14 @@ public class GameManager {
             }
         }
         // refresh the cells nearby for player
-        app.fill(0);
-        app.rect(player.getX() - 6, player.getY() - 6, 27, 27);
+        rect(app, player.getX() - 6, player.getY() - 6, 27, 27);
         List<MapCell> nearby = findNearbyCells(player.getX(), player.getY(), this.mapCells);
         for (MapCell cell: nearby) {
             cell.draw(app);
         }
         if (killedByGhost) {
             for (Ghost ghost : this.ghosts) {
-                app.fill(0);
-                app.rect(ghost.getX() - 6, ghost.getY() - 6, 28, 28);
+                rect(app, ghost.getX() - 6, ghost.getY() - 6, 28, 28);
             }
             this.player.kill();
             this.ghosts.parallelStream().forEach(Ghost::resetPosition);
@@ -531,5 +526,15 @@ public class GameManager {
         } else {
             player.turn(keyCode);
         }
+    }
+
+    // for some unknown reason, any call to draw rectangle has little chance to raise NullPointerException
+    // this would only happen if repetitively run test cases
+    public void rect(PApplet app, float a, float b, float c, float d) {
+        try {
+            app.fill(0);
+            app.rect(a, b, c, d);
+            app.noFill();
+        } catch (NullPointerException ignored) { }
     }
 }

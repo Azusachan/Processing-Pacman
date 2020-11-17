@@ -1,0 +1,10 @@
+{
+  "map": "src/test/resources/test_player_eat_map.txt",
+  "lives": 3,
+  "speed": 3,
+  "modeLengths": [
+    10,
+    10
+  ],
+  "frightenedLength": 9999
+}

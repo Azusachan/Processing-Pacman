@@ -267,6 +267,7 @@ public class Ghost extends MovableCell{
         for (MapCell[] cells: map) {
             availableCells.addAll(Arrays.asList(cells));
         }
+        availableCells = availableCells.stream().filter(Objects::nonNull).collect(Collectors.toList());
 
         // fix issue of function when Ghost is between cells
         if (this.stepOnCell != null) {
@@ -278,7 +279,8 @@ public class Ghost extends MovableCell{
             MapCellChild current = queue.remove();
 
             if (this.target.equals(current.cell)) {
-                    this.route = trace(current);
+                    this.route = new ArrayList<>();
+                    this.route.addAll(trace(current));
                     this.routePointer = 0;
                     return;
             } else {
@@ -368,7 +370,7 @@ public class Ghost extends MovableCell{
             this.setState(this.previousState);
         }
         this.target = null;
-        this.route.clear();
+        this.route = new ArrayList<>();
         this.routePointer = 0;
         this.findTarget();
     }

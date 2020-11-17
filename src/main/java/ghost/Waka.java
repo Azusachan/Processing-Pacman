@@ -63,11 +63,13 @@ public class Waka extends MovableCell {
                     app.image(this.right, this.x - 4, this.y - 5);
             }
         }
-        // render life
-        app.fill(0);
-        app.rect(0, 545, 448, 26);
-        for (int i = 0; i < this.life; i++) {
-            app.image(this.right, 25 * i,545);
+        if (this.life != this.initialLife) {
+            // render life
+            app.fill(0);
+            app.rect(0, 545, 448, 26);
+            for (int i = 0; i < this.life; i++) {
+                app.image(this.right, 25 * i,545);
+            }
         }
     }
 

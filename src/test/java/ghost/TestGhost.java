@@ -3,6 +3,7 @@ package ghost;
 import org.junit.jupiter.api.Test;
 import processing.core.PApplet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -131,6 +132,10 @@ public class TestGhost {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
         testGhostGame.initMap(testGhostGameApp);
         testGhostGame.ghosts.parallelStream().forEach(ghost -> ghost.setState(Ghost.CHASE));
         testGhostGame.ghosts.parallelStream().forEach(Ghost::findTarget);
@@ -350,7 +355,7 @@ public class TestGhost {
         Ghost ghost = testGhostGame.ghosts.get(0);
 
         MapCell nextCell = new MapCell(null, 7, 10, 25);
-        ghost.route.clear();
+        ghost.route = new ArrayList<>();
         ghost.route.add(nextCell);
         ghost.target = nextCell;
 
@@ -401,7 +406,7 @@ public class TestGhost {
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
-        testGhostGame.ghosts.parallelStream().forEach(Ghost::frighten);
+        testGhostGame.ghosts.forEach(Ghost::frighten);
         testGhostGame.draw(testGhostGameApp);
         for (Ghost ghost: testGhostGame.ghosts) {
             assertNotNull(ghost.route);
@@ -417,7 +422,7 @@ public class TestGhost {
         }
 
         // Test frighten and invisible (extension)
-        testGhostGame.ghosts.parallelStream().forEach(Ghost::frightenAndInvisible);
+        testGhostGame.ghosts.forEach(Ghost::frightenAndInvisible);
         testGhostGame.draw(testGhostGameApp);
         for (Ghost ghost: testGhostGame.ghosts) {
             assertNotNull(ghost.route);
@@ -441,6 +446,9 @@ public class TestGhost {
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
         testGhostGame.initMap(testGhostGameApp);
+        // move player away to make sure that it is not accidentally killed
+        testGhostGame.player.x = 0;
+        testGhostGame.player.y = 0;
         Ghost ghost = testGhostGame.ghosts.get(0);
         ghost.frighten();
         MapCell target = ghost.target;
@@ -527,14 +535,14 @@ public class TestGhost {
         testGhostGame.initMap(testGhostGameApp);
         Ghost ghost = testGhostGame.ghosts.get(0);
         // handleMovement will do nothing if ghost has no route
-        ghost.route.clear();
+        ghost.route = new ArrayList<>();
         ghost.handleMovement();
         assertEquals(0, ghost.route.size());
 
         // handleMovement will reset route if ghost wants to move back
         ghost.resetPosition();
         MapCell nextCell = new MapCell(null, 7, 1, 25);
-        ghost.route.clear();
+        ghost.route = new ArrayList<>();
         ghost.currentDirection = 40;
         ghost.route.add(nextCell);
         ghost.target = nextCell;
@@ -543,7 +551,7 @@ public class TestGhost {
 
         ghost.resetPosition();
         nextCell = new MapCell(null, 7, 1, 27);
-        ghost.route.clear();
+        ghost.route = new ArrayList<>();
         ghost.currentDirection = 38;
         ghost.route.add(nextCell);
         ghost.target = nextCell;
@@ -552,7 +560,7 @@ public class TestGhost {
 
         ghost.resetPosition();
         nextCell = new MapCell(null, 7, 0, 26);
-        ghost.route.clear();
+        ghost.route = new ArrayList<>();
         ghost.currentDirection = 39;
         ghost.route.add(nextCell);
         ghost.target = nextCell;
@@ -561,7 +569,7 @@ public class TestGhost {
 
         ghost.resetPosition();
         nextCell = new MapCell(null, 7, 3, 26);
-        ghost.route.clear();
+        ghost.route = new ArrayList<>();
         ghost.currentDirection = 37;
         ghost.route.add(nextCell);
         ghost.target = nextCell;

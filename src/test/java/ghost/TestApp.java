@@ -1,11 +1,6 @@
 package ghost;
 
-import processing.core.PApplet;
-
-public class TestApp extends PApplet {
-    public GameManager currentGame;
-    public static final int WIDTH = 448;
-    public static final int HEIGHT = 576;
+public class TestApp extends App {
     public boolean isDraw;
 
     public TestApp(GameManager currentGame) {
@@ -13,23 +8,16 @@ public class TestApp extends PApplet {
         this.isDraw = false;
     }
 
+    @Override
     public void setup(){
-        size(WIDTH, HEIGHT);
         this.currentGame.setup(this);
     }
 
-    public void settings() {
-        size(WIDTH, HEIGHT);
-    }
-
+    @Override
     public void draw() {
         if (isDraw) {
-            this.currentGame.draw(this);
+            super.draw();
         }
-    }
-
-    public void keyPressed(){
-        this.currentGame.keyPressed(keyCode);
     }
 
 }

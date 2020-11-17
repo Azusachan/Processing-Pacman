@@ -174,7 +174,8 @@ public class TestWaka {
         testGhostGame.draw(testGhostGameApp);
         assertEquals(16, player.x);
         List<MapCell> nearByCells = Utility.findNearbyCells(player.getX(), player.getY(), Ghost.map);
-        assertFalse(player.tick(nearByCells));
+        player.tick(nearByCells);
+        assertEquals(16, player.x);
     }
 
     @Test
@@ -184,16 +185,14 @@ public class TestWaka {
         TestApp testGhostGameApp = new TestApp(testGhostGame);
         PApplet.runSketch(new String[] {"App"}, testGhostGameApp);
         testGhostGameApp.setup();
-        testGhostGame.initMap(testGhostGameApp);
-        testGhostGame.keyPressed(39);
-        do {
-            testGhostGame.draw(testGhostGameApp);
-        } while (testGhostGame.player.x <= 64);
-        testGhostGame.draw(testGhostGameApp);
-        assertEquals(Ghost.FRIGHTENED_AND_INVISIBLE, testGhostGame.ghosts.get(0).state);
-
+        testGhostGameApp.draw();
+        Waka player = testGhostGame.player;
         for (Fruit fruit: testGhostGame.fruits) {
-            assertTrue(fruit.isEaten);
+            player.x = fruit.x;
+            player.y = fruit.y;
+            List<MapCell> nearByCells = Utility.findNearbyCells(player.x, player.y, Ghost.map);
+            // player successfully eaten fruit
+            assertTrue(player.tick(nearByCells));
         }
     }
 }

@@ -1,0 +1,9 @@
+{
+  "lives": 3,
+  "speed": 1,
+  "modeLengths": [
+    10,
+    10
+  ],
+  "frightenedLength": 20
+}
