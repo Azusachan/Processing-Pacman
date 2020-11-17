@@ -4,12 +4,18 @@
 package ghost;
 
 import org.junit.jupiter.api.Test;
+import processing.core.PApplet;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest {
     @Test 
-    public void simpleTest() {
-        GameManager classUnderTest = new GameManager("config.json");
-        assertNotNull(classUnderTest);
+    public void testInitialize() {
+        // test App correctly read in configuration
+        App testGameApp = new App();
+        PApplet.runSketch(new String[] {"App"}, testGameApp);
+        testGameApp.setup();
+
+
     }
 }

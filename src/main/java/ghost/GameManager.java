@@ -49,7 +49,7 @@ public class GameManager {
     public Waka player;
 
     private int debug;
-    private int state;
+    public int state;
     private int startTime;
     public int modePointer;
     public List<Integer> modeLengths;
@@ -244,6 +244,10 @@ public class GameManager {
         }
         if (player == null) {
             System.out.println("Error in map: no player");
+            System.exit(0);
+        }
+        if (fruitList.isEmpty()) {
+            System.out.println("Error in map: no fruit");
             System.exit(0);
         }
         // create a nullGhost which effectively does nothing when the map does not contain anything

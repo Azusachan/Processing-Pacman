@@ -11,7 +11,7 @@ public class Waka extends MovableCell {
     private final PImage up;
     private final PImage down;
     private final PImage closed;
-    private boolean closeEye;
+    public boolean closeEye;
     private int initialLife;
     private int life;
 
