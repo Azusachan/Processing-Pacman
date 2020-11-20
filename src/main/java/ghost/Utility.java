@@ -2,9 +2,19 @@ package ghost;
 
 import java.util.*;
 
+/**
+ * Utility functions that used across multiple places
+ */
 public class Utility {
     private static List<MapCell> validCells;
 
+    /**
+     * Returns cell within 3x3 space of the given location from the given list
+     * @param x given location x axis
+     * @param y given location y axis
+     * @param list list of MapCells to search from
+     * @return cell within 3x3 space of the given location from the given list
+     */
     public static List<MapCell> findNearbyCells(int x, int y, MapCell[][] list) {
         List<MapCell> result = new ArrayList<>();
         for (MapCell[] cellList: list) {
@@ -29,6 +39,13 @@ public class Utility {
         return result;
     }
 
+    /**
+     * Find closest cell that movable cell can reach from given location from the map of the game(given)
+     * @param x given location x axis
+     * @param y given location y axis
+     * @param map the map of current game
+     * @return closest cell that movable cell can reach from given location from the map of the game
+     */
     public static MapCell findClosestMovableCell(int x, int y, MapCell[][] map) {
         if (x < 0) {
             x = 0;
@@ -61,6 +78,11 @@ public class Utility {
         return result;
     }
 
+    /**
+     * Returns all valid cell movable cell can reach on the map
+     * @param map the map of current game
+     * @return all valid cell movable cell can reach on the map
+     */
     public static List<MapCell> findValidCells(MapCell[][] map) {
         if (Utility.validCells != null) {
             return Utility.validCells;

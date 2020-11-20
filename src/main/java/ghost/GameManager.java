@@ -16,8 +16,12 @@ import java.util.stream.Collectors;
 
 import static ghost.Utility.findNearbyCells;
 
+/**
+ * Manages the rendering logic and game logic of the game
+ */
 public class GameManager {
     // Perhaps using enum is better here
+    // Cell string
     private static final String EMPTY = "0";
     private static final String HORIZONTAL = "1";
     private static final String VERTICAL = "2";
@@ -34,28 +38,75 @@ public class GameManager {
     private static final String CHASER = "c";
     private static final String IGNORANT = "i";
     private static final String WHIM = "w";
+    // States
     private static final int INITIALIZE = 0;
     private static final int UPDATE_PLAYER = 1;
     private static final int UPDATE_FRUITS = 2;
     private static final int WIN = 3;
     private static final int LOSE = 4;
     private static final int RESET = 5;
+    // Debug states
     private static final int DEBUG_OFF = 0;
     private static final int DEBUG_ON = 1;
     private static final int DEBUG_REALISTIC = 2;
 
+    /**
+     * List of list of MapCell representing map of the current game
+     */
     public MapCell[][] mapCells;
+    /**
+     * List of all ghosts in current game
+     */
     public List<Ghost> ghosts;
+    /**
+     * List of all fruits in current game
+     */
     public List<Fruit> fruits;
     private final JSONObject config;
+    /**
+     * Waka/Player of the game
+     */
     public Waka player;
 
+    /**
+     * The debug state of current game
+     * <table>
+     *     <tr><td>State</td><td>Integer</td></tr>
+     *     <tr><td>DEBUG_OFF</td><td>0</td></tr>
+     *     <tr><td>DEBUG_ON</td><td>1</td></tr>
+     *     <tr><td>DEBUG_REALISTIC</td><td>2</td></tr>
+     * </table>
+     */
     public int debug;
+    /**
+     * The state of current game
+     * <table>
+     *     <tr><td>INITIALIZE</td><td>0</td></tr>
+     *     <tr><td>UPDATE_PLAYER</td><td>1</td></tr>
+     *     <tr><td>UPDATE_FRUITS</td><td>2</td></tr>
+     *     <tr><td>WIN</td><td>3</td></tr>
+     *     <tr><td>LOSE</td><td>4</td></tr>
+     *     <tr><td>RESET</td><td>5</td></tr>
+     * </table>
+     */
     public int state;
+    /**
+     * The time the game starts in milliseconds
+     */
     public int startTime;
+    /**
+     * The number of time ghost switches mode between chase and scatter, will return to 0 if all mode lengths has been gone through
+     */
     public int modePointer;
+    /**
+     * The length of ghost's chase or scatter mode
+     */
     public List<Integer> modeLengths;
 
+    /**
+     * Initializes new GameManager
+     * @param configLocation location to the json config of the game
+     */
     public GameManager(String configLocation) {
         JSONParser parser = new JSONParser();
         JSONObject configObject = null;
@@ -78,6 +129,10 @@ public class GameManager {
         this.debug = DEBUG_OFF;
     }
 
+    /**
+     * Setup PImage and map of the game
+     * @param app PApplet to create images
+     */
     public void setup(PApplet app) {
         //start timer
         this.startTime = app.millis();
@@ -271,6 +326,15 @@ public class GameManager {
         this.fruits = fruitList.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
+    /**
+     * Render the game according to its state
+     * @param app PApplet the manager renders on
+     * @see #initMap
+     * @see #updatePlayers
+     * @see #win
+     * @see #lose
+     * @see #reset
+     */
     public void draw(PApplet app) {
         // player changes state every 8 frame
         if (app.frameCount % 8 == 0) {
@@ -298,6 +362,11 @@ public class GameManager {
         }
     }
 
+    /**
+     * Draw all cell on the map, then {@code updatePlayers}
+     * @param app PApplet to render on
+     * @see #updatePlayers
+     */
     public void initMap(PApplet app) {
         rect(app, 0, 0, 448, 576);
         for (MapCell[] line : this.mapCells) {
@@ -310,6 +379,11 @@ public class GameManager {
         this.state = UPDATE_PLAYER;
     }
 
+    /**
+     * Draw all fruits on the map, check if all fruits is eaten to determine if the game is won, then {@code updatePlayers}
+     * @param app PApplet to render on
+     * @see #updatePlayers
+     */
     public void updateFruits(PApplet app) {
         for (Fruit f : this.fruits) {
             rect(app, f.getX(), f.getY(), 16, 16);
@@ -323,6 +397,11 @@ public class GameManager {
         this.updatePlayers(app);
     }
 
+    /**
+     * Render win message, then change state to reset
+     * @param app PApplet to render on
+     * @see #reset
+     */
     public void win(PApplet app) {
         rect(app, 0, 0, 448, 576);
         app.fill(255);
@@ -332,6 +411,11 @@ public class GameManager {
         this.state = RESET;
     }
 
+    /**
+     * Render game over message, then change state to reset
+     * @param app PApplet to render on
+     * @see #reset
+     */
     public void lose(PApplet app) {
         rect(app, 0, 0, 448, 576);
         app.fill(255);
@@ -341,6 +425,10 @@ public class GameManager {
         this.state = RESET;
     }
 
+    /**
+     * Wait for 10 seconds, then reset the map to initial state
+     * @param app PApplet to render on
+     */
     public void reset(PApplet app) {
         app.delay(10000);
         this.startTime = app.millis();
@@ -352,6 +440,11 @@ public class GameManager {
         this.state = INITIALIZE;
     }
 
+    /**
+     * Returns if it is time to change state for ghosts. If it is, increment {@code modePointer}
+     * @param app PApplet to get current time
+     * @return if it is time to change state for ghosts
+     */
     public boolean updateTimer(PApplet app){
         int timer = app.millis() - this.startTime;
         timer = timer / 1000;
@@ -369,6 +462,13 @@ public class GameManager {
         }
     }
 
+    /**
+     * Move player and ghost, render cell near them and render player and ghosts.
+     *
+     * <p>If debug mode is on, it will refresh all cells at start, then call {@code handleDebug} to render debug mode lines</p>
+     * @param app PApplet to render on
+     * @see #handleDebug
+     */
     public void updatePlayers(PApplet app) {
         if (this.debug != DEBUG_OFF) {
             rect(app, 0, 0, 448, 576);
@@ -452,6 +552,16 @@ public class GameManager {
         }
     }
 
+    /**
+     * Render the debug mode lines according to debug mode
+     * <p>If debug mode is off, or the ghosts are resetting after killed the player, nothing will be rendered</p>
+     * <p>If debug mode is on, it will render lines to simulate behavior of debug mode in the video</p>
+     * <p>If debug mode is realistic, it will render lines to the center of the cell ghost target at and the square
+     * the game is trying to refresh. </p>
+     * @param app PApplet to render on
+     * @param ghost List of ghosts in the game
+     * @param killedByGhost If any ghost killed the player
+     */
     public void handleDebug(PApplet app, Ghost ghost, boolean killedByGhost) {
         if (this.debug != DEBUG_OFF && !killedByGhost) {
             app.stroke(255, 255, 0);
@@ -505,6 +615,13 @@ public class GameManager {
         }
     }
 
+    /**
+     * Change debug mode or move player according to input
+     * <p>If input is arrow button, player will be moved. </p>
+     * <p>If input is space, debug mode will turn on if it is off, turn off if it is on or realistic. </p>
+     * <p>If input is "r", debug mode will change to realistic if it is on or off, on if it is realistic. </p>
+     * @param keyCode key code of current input
+     */
     public void keyPressed(int keyCode) {
         if (keyCode == 32) { // press space
             switch (this.debug) {
@@ -532,8 +649,16 @@ public class GameManager {
         }
     }
 
-    // for some unknown reason, any call to draw rectangle has little chance to raise NullPointerException
-    // this would only happen if repetitively run test cases
+    /**
+     * Simplifies the refresh square process and handle issue in description below.
+     * <p>For unknown reason, any call of app.rect() (even if the input are all valid integers) has little chance to raise
+     * NullPointerException. This would only happen if test cases are ran repetitively. </p>
+     * @param app PApplet to render on
+     * @param a x-coordinate of the rectangle by default
+     * @param b y-coordinate of the rectangle by default
+     * @param c width of the rectangle by default
+     * @param d height of the rectangle by default
+     */
     public static void rect(PApplet app, float a, float b, float c, float d) {
         try {
             app.fill(0);
