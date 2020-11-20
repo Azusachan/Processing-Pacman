@@ -26,8 +26,8 @@ public class GameManager {
     private static final String DOWN_LEFT = "5";
     private static final String DOWN_RIGHT = "6";
     private static final String FRUIT = "7";
-    public static final String SUPER_FRUIT = "8";
-    public static final String SODA = "9";
+    private static final String SUPER_FRUIT = "8";
+    private static final String SODA = "9";
     private static final String WAKA = "p";
     private static final String GHOST = "g";
     private static final String AMBUSHER = "a";
@@ -57,7 +57,6 @@ public class GameManager {
     public List<Integer> modeLengths;
 
     public GameManager(String configLocation) {
-        //Set up your objects
         JSONParser parser = new JSONParser();
         JSONObject configObject = null;
         try {
@@ -254,7 +253,7 @@ public class GameManager {
         }
         // create a nullGhost which effectively does nothing when the map does not contain anything
         if (ghostList.isEmpty()) {
-            Ghost newGhost = new NullGhost(ghost);
+            Ghost newGhost = new NullGhost();
             newGhost.setSpeed(speed);
             newGhost.setState(Ghost.SCATTER);
             ghostList.add(newGhost);

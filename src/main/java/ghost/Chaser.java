@@ -8,12 +8,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static ghost.Utility.findClosestMovableCell;
-
+/**
+ * Ghost which scatters to top left corner and chase towards player
+ */
 public class Chaser extends Ghost{
+    /**
+     * Constructs a new instance of Chaser
+     * @param images a list of PImages, {@code list[0]} is the normal state, {@code list[1]} is the frightened state.
+     * @param character internal parameter to determine type of the cell, see {@code MapCell} for more info
+     * @param x row of the cell in map
+     * @param y column of the cell in map
+     * @see #Ghost
+     */
     Chaser(PImage[] images, int character, int x, int y) {
         super(images, character, x, y);
     }
 
+    /**
+     * Find target according to the state, then find appropriate route
+     *
+     * <p>In chase state, target will be the player</p>
+     * <p>In scatter state, target will be top left corner</p>
+     * <p>In frightened and frightened and invisible state, ghost will choose random cell as target</p>
+     * <p>In removed state, ghost will choose itself as target</p>
+     */
     @Override
     public void findTarget() {
         switch (this.state) {

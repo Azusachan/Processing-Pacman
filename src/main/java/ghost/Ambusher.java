@@ -9,13 +9,40 @@ import java.util.stream.Collectors;
 
 import static ghost.Utility.findClosestMovableCell;
 
+/**
+ * Ghost which scatters to top right corner and chase 4 grid ahead of player
+ */
 public class Ambusher extends Ghost {
+    /**
+     * X vector of ghost's assumed target
+     */
     public int vectorX;
+    /**
+     * Y vector of ghost's assumed target
+     */
     public int vectorY;
+
+    /**
+     * Constructs a new instance of Ambusher
+     * @param images a list of PImages, {@code list[0]} is the normal state, {@code list[1]} is the frightened state.
+     * @param character internal parameter to determine type of the cell, see {@code MapCell} for more info
+     * @param x row of the cell in map
+     * @param y column of the cell in map
+     * @see #Ghost
+     */
     Ambusher(PImage[] images, int character, int x, int y) {
         super(images, character, x, y);
     }
 
+    /**
+     * Find target according to the state, then find appropriate route
+     *
+     * <p>In chase state, if player is moving, target will be 4 grid ahead of player, if not, target will be the player</p>
+     * <p>In scatter state, target will be top right corner</p>
+     * <p>In frightened and frightened and invisible state, ghost will choose random cell as target</p>
+     * <p>In removed state, ghost will choose itself as target</p>
+     * <p>{@code vectorX} and {@code vectorY} is used to simulate debug mode in description</p>
+     */
     @Override
     public void findTarget() {
         switch (this.state) {
@@ -71,5 +98,15 @@ public class Ambusher extends Ghost {
                 this.target = this;
         }
         this.findRoute();
+    }
+
+    /**
+     * Reset {@code Ghost} properties and vectors
+     */
+    @Override
+    public void resetPosition() {
+        super.resetPosition();
+        this.vectorX = 0;
+        this.vectorY = 0;
     }
 }

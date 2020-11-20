@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>ghost</OriginalElement>
+  <nodes>
+    <node x="0.0" y="1050.5">ghost.SuperFruit</node>
+    <node x="10.0" y="2068.0">ghost.TestApp</node>
+    <node x="802.0" y="1586.0">ghost.Ambusher</node>
+    <node x="729.5" y="1979.0">ghost.Utility.UtilityMapCell</node>
+    <node x="797.75" y="720.0">ghost.Ghost</node>
+    <node x="1298.0" y="1978.0">ghost.TestGameManager.OverrideExitManager</node>
+    <node x="269.0" y="1786.0">ghost.TestGhost</node>
+    <node x="589.0" y="1786.0">ghost.Utility</node>
+    <node x="693.3814102564102" y="0.0">ghost.MapCell</node>
+    <node x="0.0" y="1786.0">ghost.App</node>
+    <node x="1228.0" y="1786.0">ghost.TestGameManager</node>
+    <node x="1072.0" y="1597.5">ghost.NullGhost</node>
+    <node x="17.0" y="1608.5">ghost.Soda</node>
+    <node x="1310.75" y="907.0">ghost.Waka</node>
+    <node x="1063.5" y="283.0">ghost.MovableCell</node>
+    <node x="1271.0" y="1586.0">ghost.Ignorant</node>
+    <node x="1530.0" y="1553.0">ghost.Whim</node>
+    <node x="551.0" y="1608.5">ghost.Chaser</node>
+    <node x="1797.0" y="0.0">ghost.GameManager</node>
+    <node x="1115.0" y="1988.5">ghost.TestGameManager.ExitException</node>
+    <node x="4.0" y="393.5">ghost.Fruit</node>
+    <node x="1654.0" y="1786.0">ghost.TestWaka</node>
+    <node x="246.0" y="1586.5">ghost.Ghost.MapCellChild</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="ghost.MovableCell" target="ghost.MapCell">
+      <point x="0.0" y="-193.5" />
+      <point x="1233.5" y="258.0" />
+      <point x="869.6314102564102" y="258.0" />
+      <point x="58.75" y="116.5" />
+    </edge>
+    <edge source="ghost.NullGhost" target="ghost.Ghost">
+      <point x="0.0" y="-49.5" />
+      <point x="1161.5" y="1533.0" />
+      <point x="1085.3333333333335" y="1533.0" />
+      <point x="41.08333333333337" y="391.5" />
+    </edge>
+    <edge source="ghost.TestApp" target="ghost.App">
+      <point x="0.0" y="-61.0" />
+      <point x="0.0" y="116.0" />
+    </edge>
+    <edge source="ghost.Utility.UtilityMapCell" target="ghost.Utility">
+      <point x="0.0" y="-49.5" />
+      <point x="0.0" y="71.5" />
+    </edge>
+    <edge source="ghost.TestGameManager.OverrideExitManager" target="ghost.TestGameManager">
+      <point x="0.0" y="-49.0" />
+      <point x="1453.5" y="1953.0" />
+      <point x="1373.5" y="1953.0" />
+      <point x="48.5" y="71.0" />
+    </edge>
+    <edge source="ghost.Fruit" target="ghost.MapCell">
+      <point x="0.0" y="-83.0" />
+      <point x="121.5" y="258.0" />
+      <point x="752.1314102564102" y="258.0" />
+      <point x="-58.75" y="116.5" />
+    </edge>
+    <edge source="ghost.Ambusher" target="ghost.Ghost">
+      <point x="0.0" y="-61.0" />
+      <point x="927.0" y="1533.0" />
+      <point x="1003.1666666666666" y="1533.0" />
+      <point x="-41.08333333333337" y="391.5" />
+    </edge>
+    <edge source="ghost.Chaser" target="ghost.Ghost">
+      <point x="0.0" y="-38.5" />
+      <point x="666.5" y="1533.0" />
+      <point x="921.0" y="1533.0" />
+      <point x="-123.25" y="391.5" />
+    </edge>
+    <edge source="ghost.Ghost.MapCellChild" target="ghost.Ghost">
+      <point x="0.0" y="-60.5" />
+      <point x="388.5" y="1523.0" />
+      <point x="838.8333333333334" y="1523.0" />
+      <point x="-205.41666666666663" y="391.5" />
+    </edge>
+    <edge source="ghost.Whim" target="ghost.Ghost">
+      <point x="0.0" y="-94.0" />
+      <point x="1641.0" y="1523.0" />
+      <point x="1249.6666666666665" y="1523.0" />
+      <point x="205.41666666666663" y="391.5" />
+    </edge>
+    <edge source="ghost.Waka" target="ghost.MovableCell">
+      <point x="0.0" y="-204.5" />
+      <point x="1422.75" y="695.0" />
+      <point x="1318.5" y="695.0" />
+      <point x="85.0" y="193.5" />
+    </edge>
+    <edge source="ghost.Ignorant" target="ghost.Ghost">
+      <point x="0.0" y="-61.0" />
+      <point x="1390.5" y="1533.0" />
+      <point x="1167.5" y="1533.0" />
+      <point x="123.24999999999989" y="391.5" />
+    </edge>
+    <edge source="ghost.SuperFruit" target="ghost.Fruit">
+      <point x="0.0" y="-61.0" />
+      <point x="0.0" y="83.0" />
+    </edge>
+    <edge source="ghost.Ghost" target="ghost.MovableCell">
+      <point x="-1.1368683772161603E-13" y="-391.5" />
+      <point x="1044.25" y="695.0" />
+      <point x="1148.5" y="695.0" />
+      <point x="-85.0" y="193.5" />
+    </edge>
+    <edge source="ghost.Soda" target="ghost.SuperFruit">
+      <point x="0.0" y="-38.5" />
+      <point x="0.0" y="61.0" />
+    </edge>
+    <edge source="ghost.TestGameManager.ExitException" target="ghost.TestGameManager">
+      <point x="0.0" y="-38.5" />
+      <point x="1196.5" y="1953.0" />
+      <point x="1276.5" y="1953.0" />
+      <point x="-48.5" y="71.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.5458694181830634" x="1059.5" y="1140.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Constructors</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+    <Category>Inner Classes</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

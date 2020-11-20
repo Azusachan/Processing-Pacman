@@ -5,6 +5,9 @@ import processing.core.PImage;
 
 import java.util.List;
 
+/**
+ * MovableCell that player controls, able to eat fruits and be killed by ghost
+ */
 public class Waka extends MovableCell {
     private final PImage left;
     private final PImage right;
@@ -15,6 +18,14 @@ public class Waka extends MovableCell {
     private int initialLife;
     private int life;
 
+    /**
+     * Initializes a new Waka
+     * @param images Waka's left, right up down and mouth close image
+     * @param character Integer describing the type of cell, see {@code MapCell}
+     * @param x row of the cell in map
+     * @param y column of the cell in map
+     * @see #MapCell
+     */
     Waka(PImage[] images, int character, int x, int y) {
         super(images[0], character, x, y);
         this.left = images[0];
@@ -70,19 +81,33 @@ public class Waka extends MovableCell {
         }
     }
 
+    /**
+     * Returns remaining life of the Waka
+     * @return remaining life of the Waka
+     */
     public int getLife() {
         return this.life;
     }
 
+    /**
+     * Make the Waka close or open its eyes(or mouth?)
+     */
     public void closeEye() {
         this.closeEye = !this.closeEye;
     }
 
+    /**
+     * Set the amount of life Waka has
+     * @param life the amount of life Waka has
+     */
     public void setLife(int life) {
         this.life = life;
         this.initialLife = life;
     }
 
+    /**
+     * Kills the Waka and resets its location
+     */
     public void kill(){
         this.life--;
         super.resetPosition();
@@ -94,6 +119,32 @@ public class Waka extends MovableCell {
         this.life = this.initialLife;
     }
 
+    /**
+     * Turn Waka if appropriate
+     *
+     * <p>If the Waka is making 180 degree turn, it will turn immediately, if not, then it will buffers the turn to
+     * {@code nextDirection} and wait for {@code tick} to handle the turn. </p>
+     *
+     * <p>Relation between direction and keycode</p>
+     * <table border="1">
+     *     <tr>
+     *         <td>Directions</td> <td>KeyCode</td>
+     *     </tr>
+     *     <tr>
+     *         <td>Up</td> <td>38</td>
+     *     </tr>
+     *     <tr>
+     *         <td>Down</td> <td>40</td>
+     *     </tr>
+     *     <tr>
+     *         <td>Left</td> <td>37</td>
+     *     </tr>
+     *     <tr>
+     *         <td>Right</td> <td>39</td>
+     *     </tr>
+     *     </table>
+     * @param keyCode Number to describe four direction keys on the keyboard, see description for detail
+     */
     public void turn(int keyCode) {
         this.nextDirection = keyCode;
         // turn when 180 degree

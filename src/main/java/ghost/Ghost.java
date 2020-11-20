@@ -8,27 +8,92 @@ import java.util.stream.Collectors;
 
 import static ghost.Utility.findClosestMovableCell;
 
-
+/**
+ * The basic class for ghosts.
+ *
+ * <p>
+ *     Implements a ghost described in milestone. Instances stores its image, states, target and route to target.
+ * </p>
+ */
 public class Ghost extends MovableCell{
+    /**
+     * Integer for ghost to set state chase, it's public to be used in GameManager and tests
+     */
     public static final int CHASE = 0;
+    /**
+     * Integer for ghost to set state scatter
+     */
     public static final int SCATTER = 1;
+    /**
+     * Integer for ghost to set state frightened
+     */
     public static final int FRIGHTENED = 2;
+    /**
+     * Integer for ghost to set state removed
+     */
     public static final int REMOVED = 3;
+    /**
+     * Integer for ghost to set state frightened and invisible
+     */
     public static final int FRIGHTENED_AND_INVISIBLE = 4;
 
+    /**
+     * Ghost's image, public to be tested
+     */
     public final PImage ghostImage;
+    /**
+     * Ghost's frightened image
+     */
     public final PImage frightened;
+    /**
+     * Ghost's current state in integer
+     */
     public int state;
+    /**
+     * Ghost's current target cell
+     */
     public MapCell target;
+    /**
+     * reference to current map
+     */
     public static MapCell[][] map;
+    /**
+     * reference to player
+     */
     public MapCell player;
+    /**
+     * List of cell from the cell begins search to the target cell
+     */
     public List<MapCell> route;
+    /**
+     * Ghost's previous state
+     */
     public int previousState;
+    /**
+     * Time require for ghost to recover from frightened and frightened and invisible state
+     */
     public static int frightenedDuration;
+    /**
+     * The number of cell in route as ghost's next target
+     */
     public int routePointer;
+    /**
+     * The time when ghost is frightened in milliseconds
+     */
     public int frightenedTimer;
+    /**
+     * The corner ghost sets target as, used to simulate debug mode
+     */
     public int targetCorner;
 
+    /**
+    * Constructs a new instance of ghost
+    * @param images a list of PImages, {@code list[0]} is the normal state, {@code list[1]} is the frightened state.
+    * @param character internal parameter to determine type of the cell, see {@code MapCell} for more info
+    * @param x row of the cell in map
+    * @param y column of the cell in map
+    * @see #MapCell
+    */
     Ghost(PImage[] images, int character, int x, int y) {
         super(images[0], character, x, y);
         this.ghostImage = images[0];
@@ -41,6 +106,16 @@ public class Ghost extends MovableCell{
         this.frightenedTimer = 0;
     }
 
+    /**
+    * Renders ghost onto the PApplet
+    *
+    * <p>
+    *     If the ghost is normal state, render {@code ghostImage}, if ghost is {@code FRIGHTENED}, render
+     *     {@code frightened}, if ghost is {@code FRIGHTENED_AND_INVISIBLE}, render normal image with less alpha(more
+     *     transparent), if ghost is {@code REMOVED}, the function does nothing.
+    * </p>
+    * @param app the PApplet to render the ghost
+    * */
     @Override
     public void draw(PApplet app) {
         this.handleFrighten(app);
@@ -55,6 +130,24 @@ public class Ghost extends MovableCell{
         }
     }
 
+    /**
+    * Handles movement of ghost and return if the ghost killed the player
+    *
+    * <p>If the ghost has null route, it will {@code findTarget()}. If its state is {@code
+    * FRIGHTENED} or {@code FRIGHTENED_AND_INVISIBLE}, The ghost will {@code handleMovement} where it
+    * tries not to go backwards.
+    *
+    * <p>When the ghost has empty {@code route} * and {@code routePointer} is zero, it is assumed to
+    * be arrived to destination, so it will stop moving.
+    *
+    * <p> If not, the ghost would move accordingly using the location of the cell from {@code route.get(routePointer)}
+    *
+     * <p> If the ghost reached the current cell, it will increment on its {@code routePointer} to get next cell.
+     *
+     * <p> The ghost then returns if {@code player} is less or equal than 2 pixels to itself.
+    *  @param nearbyCells a list of MapCell from {@code Utility.findNearbyCells()}
+    * @return if the {@code player} is killed by ghost
+    */
     @Override
     public boolean tick(List<MapCell> nearbyCells) {
         if (this.route == null) {
@@ -121,6 +214,9 @@ public class Ghost extends MovableCell{
         return killed;
     }
 
+    /**
+     * If ghost is moving back, find another location. (only happen in frightened)
+     */
     // make sure ghost does not turn backwards and stop when frightened.
     public void handleMovement() {
         if (this.route.size() == 0) {
@@ -146,39 +242,71 @@ public class Ghost extends MovableCell{
         }
     }
 
+    /**
+     * set the {@code state} for ghost, reset currentDirection
+     * @param state Ghost.state, see {@code CHASE} and other states in {@code Ghost}
+     * @see Ghost
+     */
     public void setState(int state) {
         this.state = state;
         this.currentDirection = 0;
     }
 
+    /**
+     * set {@code previousState} for ghost
+     * @param state Ghost.state, see {@code CHASE} and other states in {@code Ghost}
+     * @see Ghost
+     */
     public void setPreviousState(int state) {
         this.previousState = state;
     }
 
+    /**
+     * Set reference to map for Ghost
+     * @param map List of MapCell consisting the map
+     */
     public static void setMap(MapCell[][] map) {
         Ghost.map = map;
     }
 
+    /**
+     * Returns reference of current map
+     * @return List of MapCell consisting the map
+     */
     public static MapCell[][] getMap() {
         return map;
     }
 
+    /**
+     * Set the length of frightened state
+     * @param duration length of frightened state in seconds
+     */
     public static void setFrightenedDuration(int duration) {
         Ghost.frightenedDuration = duration;
     }
 
+    /**
+     * Make the ghost frighten and find new target
+     */
     public void frighten(){
         this.previousState = this.state;
         this.setState(FRIGHTENED);
         this.findTarget();
     }
 
+    /**
+     * make the ghost frighten and invisible(extension Soda)
+     */
     public void frightenAndInvisible(){
         this.previousState = this.state;
         this.setState(FRIGHTENED_AND_INVISIBLE);
         this.findTarget();
     }
 
+    /**
+     * Check if the ghost is no longer frightened
+     * @param app PApplet of current window to get time
+     */
     public void handleFrighten(PApplet app) {
         if ((this.state == FRIGHTENED || this.state == FRIGHTENED_AND_INVISIBLE) && this.frightenedTimer == 0) {
             this.frightenedTimer = app.millis();
@@ -192,6 +320,9 @@ public class Ghost extends MovableCell{
         }
     }
 
+    /**
+     * Find the player of map for the ghost
+     */
     public void findPlayer() {
         if (this.player == null) {
             for (MapCell[] cells : map) {
@@ -204,6 +335,14 @@ public class Ghost extends MovableCell{
         }
     }
 
+    /**
+     * Find target according to the state, then find appropriate route, the description below only applies to normal Ghost.
+     *
+     * <p>In chase state, the player is the target</p>
+     * <p>In scatter state, ghost will find nearest corner as the target</p>
+     * <p>In frightened and frightened and invisible state, ghost will choose random cell as target</p>
+     * <p>In removed state, ghost will choose itself as target</p>
+     */
     public void findTarget() {
         switch (this.state) {
             case CHASE:
@@ -254,6 +393,15 @@ public class Ghost extends MovableCell{
         this.findRoute();
     }
 
+    /**
+     * Find appropriate route for the ghost as a list of MapCell towards target.
+     * <p>The algorithm will recursively trace through available cells weighted by euclidean distance to target
+     * until target is found. Then it will generate a path towards target and set it as the ghost's route.</p>
+     * <p>There is no "visited list" as visited cell is being removed from {@code availableCells}</p>
+     * @see Ghost.MapCellChild
+     * @see Ghost#getChildren
+     * @see Ghost#trace
+     */
     public void findRoute() {
         if (this.equals(this.target)) {
             this.route = new ArrayList<>();
@@ -291,6 +439,14 @@ public class Ghost extends MovableCell{
         }
     }
 
+    /**
+     * Generates a list of MapCell from starting point to target
+     *
+     * <p>Accomplished by recursively go through the LinkedList of {@code MapCellChild} and add cell to the list</p>
+     * @param target the {@code MapCellChild} located above target, endpoint of the route
+     * @return a list of {@code MapCell} from start to end
+     * @see Ghost.MapCellChild
+     */
     public static List<MapCell> trace(MapCellChild target) {
         List<MapCell> path = new ArrayList<>();
         MapCellChild current = target;
@@ -302,6 +458,18 @@ public class Ghost extends MovableCell{
         return path;
     }
 
+    /**
+     * Returns a list of movable cells sort by its euclidean distance to target
+     * <p>If current {@code MapCellChild} is the start point({@code current.parentCell == null}, the cell on the
+     * opposite side of ghost's direction is discarded to ensure the ghost does not move backwards</p>
+     * <p>Appropriate cells near current cell's four directions will be add to the list, then sorted by their euclidean
+     * distance to the target. </p>
+     * @param current the cell to search with
+     * @param target the target of route
+     * @param nearbyCells list of cell to be searched
+     * @return list of appropriate child of current cell, sorted by euclidean distance to target
+     * @see Ghost.MapCellChild
+     */
     public List<MapCellChild> getChildren(MapCellChild current, MapCell target, List<MapCell> nearbyCells) {
         List<MapCellChild> children = new ArrayList<>();
         for (MapCell cell: nearbyCells) {
@@ -352,17 +520,35 @@ public class Ghost extends MovableCell{
         return children;
     }
 
+    /**
+     * Internal class of Ghost to find route towards target
+     *
+     * <p>Contains current cell and parent cell. Can be used to trace a path</p>
+     * <p>Contains distance to store the euclidean distance to target</p>
+     * @see Ghost#findRoute
+     * @see Ghost#getChildren
+     * @see Ghost#trace
+     */
     public static class MapCellChild{
         public MapCell cell;
         public MapCellChild parentCell;
         public double distance;
 
+        /**
+         * constructor of {@code MapCellChild}
+         * @param cell Current cell
+         * @param parentCell Parent Cell above the branch
+         */
         public MapCellChild(MapCell cell, MapCellChild parentCell) {
             this.cell = cell;
             this.parentCell = parentCell;
         }
     }
 
+    /**
+     * Reset {@code MovableCell} properties, state(see description), target, route of current Ghost
+     * <p>State will only return to {@code previousState} if ghost is frightened or frightened and invisible</p>
+     */
     @Override
     public void resetPosition() {
         super.resetPosition();

@@ -9,15 +9,45 @@ import java.util.stream.Collectors;
 
 import static ghost.Utility.findClosestMovableCell;
 
+/**
+ * Ghost which scatters to bottom right corner and chase according to chaser's vector to player
+ */
 public class Whim extends Ghost{
+    /**
+     * Reference to chaser if exists in map
+     */
     Ghost chaser;
+    /**
+     * X vector of ghost's assumed target
+     */
     public int vectorX;
+    /**
+     * Y vector of ghost's assumed target
+     */
     public int vectorY;
+    /**
+     * Constructs a new instance of Whim
+     * @param images a list of PImages, {@code list[0]} is the normal state, {@code list[1]} is the frightened state.
+     * @param character internal parameter to determine type of the cell, see {@code MapCell} for more info
+     * @param x row of the cell in map
+     * @param y column of the cell in map
+     * @see #Ghost
+     */
     Whim(PImage[] images, int character, int x, int y) {
         super(images, character, x, y);
         this.chaser = null;
     }
 
+    /**
+     * Find target according to the state, then find appropriate route
+     *
+     * <p>In chase state, if chaser not exists, target will be the player. If exists, taaaarget will be double the vector
+     * from chaser to 2 grid spaces ahead of the player. </p>
+     * <p>In scatter state, target will be bottom right corner</p>
+     * <p>In frightened and frightened and invisible state, ghost will choose random cell as target</p>
+     * <p>In removed state, ghost will choose itself as target</p>
+     * <p>{@code vectorX} and {@code vectorY} is used to simulate debug mode in description</p>
+     */
     @Override
     public void findTarget() {
         switch (this.state) {
@@ -98,6 +128,9 @@ public class Whim extends Ghost{
         }
     }
 
+    /**
+     * Reset {@code Ghost} properties, vectors and chaser
+     */
     @Override
     public void resetPosition() {
         super.resetPosition();

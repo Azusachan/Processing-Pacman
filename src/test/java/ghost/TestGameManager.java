@@ -243,7 +243,7 @@ class TestGameManager {
 
         // test updatePlayers change state
         testGhostGame.ghosts = new ArrayList<>();
-        Ghost newGhost = new NullGhost(new PImage[]{null, null}) {
+        Ghost newGhost = new NullGhost() {
             @Override
             public void findTarget() {
                 this.target = new MapCell(null, 7, 9, 0);
