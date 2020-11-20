@@ -115,15 +115,12 @@ public class GameManager {
             FileReader reader = new FileReader(config);
             configObject = (JSONObject) parser.parse(reader);
         } catch (IOException e) {
-            System.out.println("No configuration");
-            System.exit(1);
+            throw new RuntimeException("No configuration");
         } catch (ParseException e) {
-            System.out.println("Error in configuration");
-            System.exit(1);
+            throw new RuntimeException("Error in configuration");
         }
         if (configObject == null) {
-            System.out.println("Error in configuration");
-            System.exit(1);
+            throw new RuntimeException("Error in configuration");
         }
         this.config = configObject;
         this.debug = DEBUG_OFF;
@@ -140,8 +137,7 @@ public class GameManager {
         //load up map
         String mapLocation = (String) this.config.get("map");
         if (mapLocation == null) {
-            System.out.println("Error in config: map");
-            System.exit(1);
+            throw new RuntimeException("Error in config: map");
         }
         PImage horizontal = app.loadImage("src/main/resources/horizontal.png");
         PImage vertical = app.loadImage("src/main/resources/vertical.png");
@@ -180,17 +176,14 @@ public class GameManager {
             }
             reader.close();
         } catch (IOException e) {
-            System.out.println("Error in map: IOException");
-            System.exit(1);
+            throw new RuntimeException("Error in map: IOException");
         }
         if (lines.size() != 36 || lines.get(0).length() != 28) {
-            System.out.println("Error in map: size");
-            System.exit(1);
+            throw new RuntimeException("Error in map: size");
         }
         int speed = ((Long) this.config.get("speed")).intValue();
         if (speed > 2 || speed <= 0) {
-            System.out.println("Error in config: speed");
-            System.exit(1);
+            throw new RuntimeException("Error in config: speed");
         }
         List<Integer> modeLengths = new ArrayList<>();
         JSONArray modeLengthsJSON =(JSONArray) this.config.get("modeLengths");
@@ -199,8 +192,7 @@ public class GameManager {
                 modeLengths.add(Math.toIntExact((Long) o));
             }
         } else {
-            System.out.println("Error in config: modeLengths");
-            System.exit(1);
+            throw new RuntimeException("Error in config: modeLengths");
         }
         int frightened = ((Long) this.config.get("frightenedLength")).intValue();
         this.modeLengths = modeLengths;
@@ -293,18 +285,15 @@ public class GameManager {
                         mapList[row][col] = newWhim;
                         break;
                     default:
-                        System.out.println("Error in map: unknown configuration");
-                        System.exit(1);
+                        throw new RuntimeException("Error in map: unknown configuration");
                 }
             }
         }
         if (player == null) {
-            System.out.println("Error in map: no player");
-            System.exit(1);
+            throw new RuntimeException("Error in map: no player");
         }
         if (fruitList.isEmpty()) {
-            System.out.println("Error in map: no fruit");
-            System.exit(1);
+            throw new RuntimeException("Error in map: no fruit");
         }
         // create a nullGhost which effectively does nothing when the map does not contain anything
         if (ghostList.isEmpty()) {
@@ -316,8 +305,7 @@ public class GameManager {
         player.setSpeed(speed);
         int life = ((Long) this.config.get("lives")).intValue();
         if (life <= 0) {
-            System.out.println("Error in config: lives");
-            System.exit(1);
+            throw new RuntimeException("Error in config: lives");
         }
         player.setLife(life);
         this.mapCells = mapList;

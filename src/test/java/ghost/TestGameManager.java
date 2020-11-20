@@ -14,25 +14,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TestGameManager {
-    protected static class ExitException extends SecurityException {
-        public final int status;
-        public ExitException(int status) {
-            this.status = status;
-        }
-    }
-
-    private static class OverrideExitManager extends SecurityManager {
-        @Override
-        public void checkPermission(Permission perm) {}
-        @Override
-        public void checkPermission(Permission perm, Object context) {}
-
-        @Override
-        public void checkExit(int exitCode) {
-            super.checkExit(exitCode);
-            throw new ExitException(exitCode);
-        }
-    }
 
     @Test
     public void testInitialize() {
@@ -53,65 +34,54 @@ class TestGameManager {
     // sad.
     @Test
     public void testErrors() {
-        SecurityManager securityManager = System.getSecurityManager();
-        System.setSecurityManager(new OverrideExitManager());
-
         // test json format error
         try {
             GameManager testGhostGame = new GameManager("src/test/resources/test_error_config.json");
-        } catch (ExitException e) {
-            assertEquals(1, e.status);
-        }
-
-        // test json format error
-        try {
-            GameManager testGhostGame = new GameManager("src/test/resources/test_error_config.json");
-        } catch (ExitException e) {
-            assertEquals(1, e.status);
+        } catch (RuntimeException e) {
+            assertEquals("Error in configuration", e.getMessage());
         }
 
         // test json no content
         try {
             GameManager testGhostGame = new GameManager("src/test/resources/test_empty_config.json");
-        } catch (ExitException e) {
-            assertEquals(1, e.status);
+        } catch (RuntimeException e) {
+            assertEquals("Error in configuration", e.getMessage());
         }
         // test json no map location
         try {
             GameManager testGhostGame = new GameManager("src/test/resources/test_no_map_config.json");
-        } catch (ExitException e) {
-            assertEquals(1, e.status);
+        } catch (RuntimeException e) {
+            assertEquals("Error in config: map", e.getMessage());
         }
         // test json invalid map location
         try {
             GameManager testGhostGame = new GameManager("src/test/resources/test_invalid_map_config.json");
-        } catch (ExitException e) {
-            assertEquals(1, e.status);
+        } catch (RuntimeException e) {
+            assertEquals("Error in map: IOException", e.getMessage());
         }
         // test json invalid map size
         try {
             GameManager testGhostGame = new GameManager("src/test/resources/test_invalid_size_config.json");
-        } catch (ExitException e) {
-            assertEquals(1, e.status);
+        } catch (RuntimeException e) {
+            assertEquals("Error in map: size", e.getMessage());
         }
         // test json invalid speed
         try {
             GameManager testGhostGame = new GameManager("src/test/resources/test_speed_too_high.json");
-        } catch (ExitException e) {
-            assertEquals(1, e.status);
+        } catch (RuntimeException e) {
+            assertEquals("Error in config: speed", e.getMessage());
         }
         try {
             GameManager testGhostGame = new GameManager("src/test/resources/test_speed_too_low.json");
-        } catch (ExitException e) {
-            assertEquals(1, e.status);
+        } catch (RuntimeException e) {
+            assertEquals("Error in config: speed", e.getMessage());
         }
         // test json no mode length
         try {
             GameManager testGhostGame = new GameManager("src/test/resources/test_no_mode_length.json");
-        } catch (ExitException e) {
-            assertEquals(1, e.status);
+        } catch (RuntimeException e) {
+            assertEquals("Error in config: modeLengths", e.getMessage());
         }
-        System.setSecurityManager(securityManager);
     }
 
     @Test
