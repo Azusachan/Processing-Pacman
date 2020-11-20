@@ -70,7 +70,7 @@ public class GameManager {
 
     /**
      * The debug state of current game
-     * <table>
+     * <table summary="Debug state of game">
      *     <tr><td>State</td><td>Integer</td></tr>
      *     <tr><td>DEBUG_OFF</td><td>0</td></tr>
      *     <tr><td>DEBUG_ON</td><td>1</td></tr>
@@ -80,7 +80,7 @@ public class GameManager {
     public int debug;
     /**
      * The state of current game
-     * <table>
+     * <table summary="State of game">
      *     <tr><td>INITIALIZE</td><td>0</td></tr>
      *     <tr><td>UPDATE_PLAYER</td><td>1</td></tr>
      *     <tr><td>UPDATE_FRUITS</td><td>2</td></tr>

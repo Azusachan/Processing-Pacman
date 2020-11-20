@@ -126,7 +126,7 @@ public class Waka extends MovableCell {
      * {@code nextDirection} and wait for {@code tick} to handle the turn. </p>
      *
      * <p>Relation between direction and keycode</p>
-     * <table border="1">
+     * <table summary="Keycode and Direction">
      *     <tr>
      *         <td>Directions</td> <td>KeyCode</td>
      *     </tr>

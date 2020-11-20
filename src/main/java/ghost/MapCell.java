@@ -3,6 +3,9 @@ package ghost;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+/**
+ * Basic cell for the map
+ */
 public class MapCell {
     /**
      * Image of the cell
